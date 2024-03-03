@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <variant>
 
 using  namespace std;
 
@@ -89,13 +91,17 @@ bool isPunction(char newElement)
   return false;
 }
 
-int main()
-{
+int main(){
+
   string input_file = "input.txt";
   //string input = readFileToString(input_file);
   string input = "hello I can Help 234 34 is not 2343 her234))  fwer)43 2323there ++= +23+  \"this is a string\" before_comment //this is a comment\n after_comment hello again";
   input = input + '\n';
 
+  //token container.....
+  using MyVariant = variant<int, double, string, char>;
+  vector<MyVariant> tokens;
+  
   string buffer = "";
   int index = 0;
 
@@ -115,6 +121,7 @@ int main()
         else
         {
           // TODO: Add bufffer to something
+          tokens.push_back(buffer);
           cout << "Identifier : " << buffer << endl;
           buffer = "";
           index--;
@@ -135,6 +142,7 @@ int main()
         else
         {
           // TODO: Add bufffer to something
+           tokens.push_back(buffer);
           cout << "Integer : " << buffer << endl;
           buffer = "";
           index--;
@@ -170,6 +178,7 @@ int main()
         {
           buffer += c;
           cout << "String : " << buffer << endl;
+           tokens.push_back(buffer);
           buffer = "";
           break;
         }
@@ -204,6 +213,7 @@ int main()
           else
           {
             // TODO: Add bufffer to something
+             tokens.push_back(buffer);
             cout << "Operator : " << buffer << endl;
             buffer = "";
             index--;
@@ -215,6 +225,14 @@ int main()
     else if (isPunction(c))
     {
       cout << "Punction : " << c << endl;
+      tokens.push_back(c);
     }
   }
+  //print all tokens......(optional)
+  for (const auto& item : tokens) {
+        visit([](const auto& value) {
+            cout << value << std::endl;
+        }, item);
+    }
+
 }
