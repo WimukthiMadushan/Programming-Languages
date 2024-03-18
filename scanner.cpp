@@ -2,7 +2,16 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
 using namespace std;
+
+typedef struct Token
+{
+  string type;
+  string value;
+
+  Token(string type, string value) : type(type), value(value) {}
+} Token;
 
 string readFileToString(const string &filename)
 {
@@ -99,11 +108,38 @@ string addSpace(string buffer, char space_char)
   return buffer;
 }
 
+vector<Token> scanner(string input);
+vector<Token> printTokens(vector<Token> tokens);
+vector<Token> screener(vector<Token> tokens);
+
 int main()
 {
   string input_file = "input.txt";
-  // string input = readFileToString(input_file);
-  string input = "hello I can Help 234 34 is not 2343 her234))  fwer)43 2323there ++= +23+  \"this is a string\" before_comment //this is a comment\n after_comment hello again";
+  string input = readFileToString(input_file);
+  // string input = "hello I can Help 234 34 is not 2343 her234))  fwer)43 2323there ++= +23+  \"this is a string\" before_comment //this is a comment\n after_comment hello again";
+  vector<Token> tokens = scanner(input);
+  tokens = screener(tokens);
+  printTokens(tokens);
+}
+
+vector<Token> screener(vector<Token> tokens)
+{
+
+  vector<Token> new_tokens;
+  for (const auto &i : tokens)
+  {
+    if ((i.type != "comment") && (i.type != "space"))
+    {
+      new_tokens.push_back(i);
+    }
+  }
+  return new_tokens;
+}
+
+vector<Token> scanner(string input)
+{
+  vector<Token> tokens;
+
   input = input + '\n';
 
   string buffer = "";
@@ -125,7 +161,8 @@ int main()
         else
         {
           // TODO: Add bufffer to something
-          cout << "Identifier : " << buffer << endl;
+          tokens.push_back(Token("identifier", buffer));
+          // cout << "Identifier : " << buffer << endl;
           buffer = "";
           index--;
           break;
@@ -145,7 +182,8 @@ int main()
         else
         {
           // TODO: Add bufffer to something
-          cout << "Integer : " << buffer << endl;
+          tokens.push_back(Token("integer", buffer));
+          // cout << "Integer : " << buffer << endl;
           buffer = "";
           index--;
           break;
@@ -179,7 +217,9 @@ int main()
         else if (c == '"')
         {
           buffer += c;
-          cout << "String : " << buffer << endl;
+          // TODO: Add bufffer to something
+          tokens.push_back(Token("string", buffer));
+          // cout << "String : " << buffer << endl;
           buffer = "";
           break;
         }
@@ -198,7 +238,8 @@ int main()
         else
         {
           // TODO: Add bufffer to something
-          cout << "Space : " << buffer << endl;
+          tokens.push_back(Token("space", buffer));
+          // cout << "Space : " << buffer << endl;
           buffer = "";
           index--;
           break;
@@ -217,7 +258,9 @@ int main()
         }
         buffer += "\\n";
         index++;
-        cout << "Comment : " << buffer << endl;
+        // TODO: Add bufffer to something
+        tokens.push_back(Token("comment", buffer));
+        // cout << "Comment : " << buffer << endl;
         buffer = "";
       }
       else
@@ -233,7 +276,8 @@ int main()
           else
           {
             // TODO: Add bufffer to something
-            cout << "Operator : " << buffer << endl;
+            tokens.push_back(Token("operator", buffer));
+            // cout << "Operator : " << buffer << endl;
             buffer = "";
             index--;
             break;
@@ -243,7 +287,20 @@ int main()
     }
     else if (isPunction(c))
     {
-      cout << "Punction : " << c << endl;
+      buffer += c;
+      // TODO: Add bufffer to something
+      tokens.push_back(Token("punction", buffer));
+      // cout << "Punction : " << buffer << endl;
+      buffer = "";
     }
+  }
+  return tokens;
+}
+
+vector<Token> printTokens(vector<Token> tokens)
+{
+  for (const auto &i : tokens)
+  {
+    cout << i.type << " : " << i.value << std::endl;
   }
 }
