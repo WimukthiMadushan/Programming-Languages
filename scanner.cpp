@@ -5,13 +5,10 @@
 #include <vector>
 using namespace std;
 
-typedef struct Token
-{
-  string type;
-  string value;
+#include "struct.h"
+#include "vocabulary.h"
 
-  Token(string type, string value) : type(type), value(value) {}
-} Token;
+vector<Token> tokens;
 
 string readFileToString(const string &filename)
 {
@@ -25,76 +22,6 @@ string readFileToString(const string &filename)
   buffer << file.rdbuf();
   file.close();
   return buffer.str();
-}
-
-bool isLetter(char newElement)
-{
-  int size = 52;
-  char letter[size] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-  for (int i = 0; i < size; ++i)
-  {
-    if (letter[i] == newElement)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool isDigit(char newElement)
-{
-  int size = 10;
-  char digit[size] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-  for (int i = 0; i < size; ++i)
-  {
-    if (digit[i] == newElement)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool isSpace(char newElement)
-{
-  int size = 3;
-  char space[size] = {' ', '\t', '\n'};
-  for (int i = 0; i < size; ++i)
-  {
-    if (space[i] == newElement)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool isOperator(char newElement)
-{
-  int size = 25;
-  char operator_symb[size] = {'+', '-', '*', '<', '>', '&', '.', '@', '/', ':', '=', '~', '|', '$', '!', '#', '%', '^', '_', '[', ']', '{', '}', '\'', '?'};
-  for (int i = 0; i < size; ++i)
-  {
-    if (operator_symb[i] == newElement)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool isPunction(char newElement)
-{
-  int size = 4;
-  char punction[size] = {'(', ')', ';', ','};
-  for (int i = 0; i < size; ++i)
-  {
-    if (punction[i] == newElement)
-    {
-      return true;
-    }
-  }
-  return false;
 }
 
 string addSpace(string buffer, char space_char)
@@ -116,15 +43,14 @@ int main()
 {
   string input_file = "input.txt";
   string input = readFileToString(input_file);
-  // string input = "hello I can Help 234 34 is not 2343 her234))  fwer)43 2323there ++= +23+  \"this is a string\" before_comment //this is a comment\n after_comment hello again";
-  vector<Token> tokens = scanner(input);
+  // string input = "hello I can Help 234 34 is not 2343 her234)) , fwer)43 2323there ++= +23+  \'\'this is a string\'\' before_comment //this is a comment\n after_comment hello again";
+  tokens = scanner(input);
   tokens = screener(tokens);
   printTokens(tokens);
 }
 
 vector<Token> screener(vector<Token> tokens)
 {
-
   vector<Token> new_tokens;
   for (const auto &i : tokens)
   {
@@ -190,9 +116,10 @@ vector<Token> scanner(string input)
         }
       }
     }
-    else if (c == '"')
+    else if ((c == '\'') && (input[index] == '\''))
     {
-      buffer = c;
+      index++;
+      buffer = "\'\'";
       while (true)
       {
         c = input[index++];
@@ -200,9 +127,15 @@ vector<Token> scanner(string input)
         {
           buffer += c;
           c = input[index++];
-          if ((c == 't') || (c == 'n') || (c == '\\') || (c == '\"'))
+          if ((c == 't') || (c == 'n') || (c == '\\'))
           {
             buffer += c;
+            continue;
+          }
+          else if ((c == '\'') && (input[index] == '\''))
+          {
+            buffer += "\'\'";
+            index++;
             continue;
           }
           else
@@ -214,9 +147,10 @@ vector<Token> scanner(string input)
         {
           buffer += c;
         }
-        else if (c == '"')
+        else if ((c == '\'') && (input[index] == '\''))
         {
-          buffer += c;
+          buffer += "\'\'";
+          index++;
           // TODO: Add bufffer to something
           tokens.push_back(Token("string", buffer));
           // cout << "String : " << buffer << endl;
@@ -289,7 +223,7 @@ vector<Token> scanner(string input)
     {
       buffer += c;
       // TODO: Add bufffer to something
-      tokens.push_back(Token("punction", buffer));
+      tokens.push_back(Token(buffer, buffer));
       // cout << "Punction : " << buffer << endl;
       buffer = "";
     }

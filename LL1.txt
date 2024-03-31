@@ -1,0 +1,90 @@
+E -> ’let’ D ’in’ E
+  -> ’fn’ Vb+ ’.’ E
+  -> Ew;
+
+Ew-> T X1
+X1-> ’where’ Dr
+  -> ;
+
+T -> Ta X2 
+X2-> ( ’,’ Ta )+
+  -> ;
+
+Ta-> Tc X3
+X3-> ’aug’ X3
+  -> Tc ;
+
+Tc-> B X4
+X4 -> ’->’ Tc ’|’ Tc
+  -> ;
+  
+B -> Bt X5
+X5-> 'or' X5 ;
+  -> Bt ;
+
+Bt-> Bs X6
+X6-> ’&’ X6
+  -> Bs ;
+
+Bs-> ’not’ Bp
+  -> Bp ;
+
+Bp-> A X7
+X7-> (’gr’ | ’>’ ) A
+  -> (’ge’ | ’>=’) A
+  -> (’ls’ | ’<’ ) A
+  -> (’le’ | ’<=’) A
+  -> ’eq’ A
+  -> ’ne’ A
+  -> ;
+
+A -> ’+’ At X8
+  -> ’-’ At X8
+  -> At ; X8
+X8-> ’+’ At
+  -> ’-’ At
+
+At-> Af ;
+P -> ’*’ Af
+  -> ’/’ Af
+
+Af-> Ap Q
+Q -> ’**’ Af
+  -> ;
+
+Ap-> Ap ’@’ ’<IDENTIFIER>’ R
+  -> R ;
+
+R -> R Rn => ’gamma’
+  -> Rn ;
+
+Rn-> ’<IDENTIFIER>’
+  -> ’<INTEGER>’
+  -> ’<STRING>’
+  -> ’true’
+  -> ’false’
+  -> ’nil’
+  -> ’(’ E ’)’
+  -> ’dummy’
+
+D -> Da U
+U -> ’within’ D
+  -> ;
+
+Da-> Dr W
+W -> ( ’and’ Dr )+
+  -> ;
+
+Dr-> ’rec’ Db
+  -> Db ;
+
+Db-> Vl ’=’ E
+  -> ’<IDENTIFIER>’ Vb+ ’=’ E
+  -> ’(’ D ’)’ ;
+
+Vb-> ’<IDENTIFIER>’
+  -> ’(’ Vl ’)’
+  -> ’(’ ’)’
+
+Vl-> ’<IDENTIFIER>’ list ’,’
+
