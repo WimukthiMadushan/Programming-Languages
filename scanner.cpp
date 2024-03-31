@@ -7,6 +7,7 @@ using namespace std;
 
 #include "struct.h"
 #include "vocabulary.h"
+#include "grammer.h"
 
 vector<Token> tokens;
 
@@ -36,17 +37,19 @@ string addSpace(string buffer, char space_char)
 }
 
 vector<Token> scanner(string input);
-vector<Token> printTokens(vector<Token> tokens);
+void printTokens(vector<Token> tokens);
 vector<Token> screener(vector<Token> tokens);
 
 int main()
 {
   string input_file = "input.txt";
-  string input = readFileToString(input_file);
-  // string input = "hello I can Help 234 34 is not 2343 her234)) , fwer)43 2323there ++= +23+  \'\'this is a string\'\' before_comment //this is a comment\n after_comment hello again";
+  // string input = readFileToString(input_file);
+  // string input = "hello I can Help 234 34 is not 2343 her234))  **, fwer)43 2323there ++= +23+  \'\'this is a string\'\' before_comment //this is a comment\n after_comment hello again";
+  string input = "fn  ( ( . ;";
   tokens = scanner(input);
   tokens = screener(tokens);
   printTokens(tokens);
+  E();
 }
 
 vector<Token> screener(vector<Token> tokens)
@@ -54,7 +57,12 @@ vector<Token> screener(vector<Token> tokens)
   vector<Token> new_tokens;
   for (const auto &i : tokens)
   {
-    if ((i.type != "comment") && (i.type != "space"))
+    if (i.type == "EOF")
+    {
+      new_tokens.push_back(i);
+      break;
+    }
+    else if ((i.type != "comment") && (i.type != "space"))
     {
       new_tokens.push_back(i);
     }
@@ -228,13 +236,22 @@ vector<Token> scanner(string input)
       buffer = "";
     }
   }
+  tokens.push_back(Token("EOF", "EOF"));
   return tokens;
 }
 
-vector<Token> printTokens(vector<Token> tokens)
+void printTokens(vector<Token> tokens)
 {
   for (const auto &i : tokens)
   {
-    cout << i.type << " : " << i.value << std::endl;
+    if (i.type == "EOF")
+    {
+      cout << i.type << " : " << i.value << endl;
+      break;
+    }
+    else
+    {
+      cout << i.type << " : " << i.value << std::endl;
+    }
   }
 }
