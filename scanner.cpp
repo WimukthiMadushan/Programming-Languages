@@ -10,7 +10,6 @@ using namespace std;
 #include "grammer.h"
 
 vector<Token> tokens;
-
 string readFileToString(const string &filename)
 {
   ifstream file(filename);
@@ -45,11 +44,11 @@ int main()
   string input_file = "input.txt";
   // string input = readFileToString(input_file);
   // string input = "hello I can Help 234 34 is not 2343 her234))  **, fwer)43 2323there ++= +23+  \'\'this is a string\'\' before_comment //this is a comment\n after_comment hello again";
-  string input = "fn  ( ( . ;";
+  string input = "These,are,just,identifiers";
   tokens = scanner(input);
   tokens = screener(tokens);
   printTokens(tokens);
-  E();
+  Vl();
 }
 
 vector<Token> screener(vector<Token> tokens)
