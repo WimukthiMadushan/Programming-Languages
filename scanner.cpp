@@ -44,16 +44,33 @@ string addSpace(string buffer, char space_char)
 vector<Token> scanner(string input);
 void printTokens(vector<Token> tokens);
 vector<Token> screener(vector<Token> tokens);
+void printTree(vector<string> rule);
 
 int main()
 {
   string input_file = "input.txt";
   // string input = readFileToString(input_file);
-  // string input = "hello I can Help 234 34 is not 2343 her234))  **, fwer)43 2323there ++= +23+  \'\'this is a string\'\' before_comment //this is a comment\n after_comment hello again";
-  string input = "These,are,just,identifiers";
+  // string input = "- true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; 'gr'  - true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; ;";
+  string input = "5 & hello or help";
   tokens = scanner(input);
   tokens = screener(tokens);
   printTokens(tokens);
+  cout << endl;
+  E();
+  if (tokens[0].type == "EOF")
+  {
+    cout << "Grammer rules" << endl;
+    printTree(dt_bu);
+    cout << endl;
+
+    cout << "AST" << endl;
+    printAST(ast_bu.top());
+    cout << endl;
+  }
+  else
+  {
+    cout << "Input is not valid" << endl;
+  }
 }
 
 vector<Token> screener(vector<Token> tokens)
@@ -257,5 +274,13 @@ void printTokens(vector<Token> tokens)
     {
       cout << i.type << " : " << i.value << std::endl;
     }
+  }
+}
+
+void printTree(vector<string> rule)
+{
+  for (const auto &i : rule)
+  {
+    cout << i << endl;
   }
 }

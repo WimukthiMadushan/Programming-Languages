@@ -33,6 +33,7 @@ void Read(string type, string value)
   {
     if (tokens[0].type == type)
     {
+      Build_tree(tokens[0].value, 0);
       tokens.erase(tokens.begin());
     }
     else
@@ -56,7 +57,15 @@ bool NextToken(string type, string value)
 {
   if (value == "any" && tokens[0].type == type)
   {
-    return true;
+    string val = tokens[0].value;
+    if ((val == "dummy") || (val == "nil") || (val == "within") || (val == "and") || (val == "rec") || (val == "false") || (val == "true") || (val == "ne") || (val == "eq") || (val == "le") || (val == "ls") || (val == "ge") || (val == "gr") || (val == "not") || (val == "or") || (val == "aug") || (val == "where") || (val == "fn") || (val == "let") || (val == "in"))
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
   else if (tokens[0].value == value && tokens[0].type == type)
   {
@@ -75,11 +84,11 @@ void E()
     Read("identifier", "in");
     E();
     dt_bu.push_back("E -> 'let' D 'in' E");
+    Build_tree("let", 2);
   }
   else if (NextToken("identifier", "fn"))
   {
-    int n = 0;
-    dt_td.push_back("E -> 'fn' Vb+ '.' E");
+    int n = 1;
     Read("identifier", "fn");
     do
     {
@@ -89,11 +98,11 @@ void E()
     Read("operator", ".");
     E();
     dt_bu.push_back("E -> 'fn' Vb+ '.' E");
+    Build_tree("lambda", n);
   }
   else
   {
     Ew();
-    Read(";", ";");
     dt_bu.push_back("E -> Ew");
   }
 }
@@ -105,82 +114,106 @@ void Ew()
   {
     Read("identifier", "where");
     Dr();
+    dt_bu.push_back("Ew -> T 'where' Dr");
+    Build_tree("where", 2);
   }
   else
   {
-    Read(";", ";");
+    dt_bu.push_back("Ew -> T");
   }
 }
 
 void T()
 {
   Ta();
-  Read(";", ";");
-  do
+  if (NextToken(",", ","))
   {
-    Read("operator", ",");
-    Ta();
-  } while (NextToken("operator", ","));
+    int n = 1;
+    do
+    {
+      Read(",", ",");
+      Ta();
+      n++;
+    } while (NextToken(",", ","));
+    dt_bu.push_back("T -> Ta ( ',' Ta )+");
+    Build_tree("tau", n);
+  }
+  else
+  {
+    dt_bu.push_back("T -> Ta");
+  }
 }
 
 void Ta()
 {
   Tc();
-  Read(";", ";");
+  dt_bu.push_back("Ta -> Tc");
   while (NextToken("identifier", "aug"))
   {
     Read("identifier", "aug");
     Tc();
+    dt_bu.push_back("Ta -> Ta 'aug' Tc");
+    Build_tree("aug", 2);
   }
 }
 
 void Tc()
 {
   B();
-  if (NextToken(";", ";"))
+  if (NextToken("operator", "->"))
   {
-    Read(";", ";");
+    Read("operator", "->");
+    Tc();
+    Read("operator", "|");
+    Tc();
+    dt_bu.push_back("Tc -> B '->' Tc '|' Tc");
+    Build_tree("->", 3);
   }
   else
   {
-    Read("opeartor", "->");
-    Tc();
-    Read("opeartor", "|");
-    Tc();
+    dt_bu.push_back("Tc -> B");
   }
 }
 
 void B()
 {
   Bt();
-  Read(";", ";");
+  dt_bu.push_back("B -> Bt");
   while (NextToken("identifier", "or"))
   {
     Read("identifier", "or");
     Bt();
+    dt_bu.push_back("B -> B 'or' Bt");
+    Build_tree("or", 2);
   }
 }
 
 void Bt()
 {
   Bs();
+  dt_bu.push_back("Bt -> Bs");
   while (NextToken("operator", "&"))
   {
     Read("operator", "&");
     Bs();
+    dt_bu.push_back("Bt -> Bt '&' Bs");
+    Build_tree("&", 2);
   }
 }
 
 void Bs()
 {
-  if (NextToken("operator", "not"))
+  if (NextToken("identifier", "not"))
   {
-    Read("operator", "not");
+    Read("identifier", "not");
     Bp();
+    dt_bu.push_back("Bs -> 'not' Bp");
+    Build_tree("not", 1);
   }
   else
   {
     Bp();
+    dt_bu.push_back("Bs -> Bp");
   }
 }
 
@@ -191,54 +224,75 @@ void Bp()
   {
     Read("identifier", "gr");
     A();
+    dt_bu.push_back("Bp -> A ('gr'|'>') A");
+    Build_tree("gr", 2);
   }
   else if (NextToken("operator", ">"))
   {
     Read("operator", ">");
     A();
+    dt_bu.push_back("Bp -> A ('gr'|'>') A");
+    Build_tree("gr", 2);
   }
   else if (NextToken("identifier", "ge"))
   {
     Read("identifier", "ge");
     A();
+    dt_bu.push_back("Bp -> A ('ge'|'>=') A");
+    Build_tree("ge", 2);
   }
   else if (NextToken("operator", ">="))
   {
     Read("operator", ">=");
     A();
+    dt_bu.push_back("Bp -> A ('ge'|'>=') A");
+    Build_tree("ge", 2);
   }
   else if (NextToken("identifier", "ls"))
   {
     Read("identifier", "ls");
     A();
+    dt_bu.push_back("Bp -> A ('ls'|'<') A");
+    Build_tree("ls", 2);
   }
   else if (NextToken("operator", ">="))
   {
     Read("operator", "<");
+    A();
+    dt_bu.push_back("Bp -> A ('ls'|'<') A");
+    Build_tree("ls", 2);
   }
   else if (NextToken("identifier", "le"))
   {
     Read("identifier", "le");
     A();
+    dt_bu.push_back("Bp -> A ('le'|'<=') A");
+    Build_tree("le", 2);
   }
   else if (NextToken("operator", "<="))
   {
     Read("operator", "<=");
     A();
+    dt_bu.push_back("Bp -> A ('le'|'<=') A");
+    Build_tree("le", 2);
   }
   else if (NextToken("identifier", "eq"))
   {
     Read("identifier", "eq");
     A();
+    dt_bu.push_back("Bp -> A 'eq' A");
+    Build_tree("eq", 2);
   }
   else if (NextToken("identifier", "ne"))
   {
     Read("identifier", "ne");
     A();
+    dt_bu.push_back("Bp -> A 'ne' A");
+    Build_tree("ne", 2);
   }
   else
   {
-    Read(";", ";");
+    dt_bu.push_back("Bp -> A");
   }
 }
 
@@ -248,27 +302,34 @@ void A()
   {
     Read("operator", "+");
     At();
+    dt_bu.push_back("A -> '+' At");
   }
   else if (NextToken("operator", "-"))
   {
     Read("operator", "-");
     At();
+    dt_bu.push_back("A -> '-' At");
+    Build_tree("neg", 1);
   }
   else
   {
     At();
-    Read(";", ";");
+    dt_bu.push_back("A -> At");
     while (NextToken("operator", "+") || NextToken("operator", "-"))
     {
       if (NextToken("operator", "+"))
       {
         Read("operator", "+");
         At();
+        dt_bu.push_back("A -> A '+' At");
+        Build_tree("+", 2);
       }
       else
       {
         Read("operator", "-");
         At();
+        dt_bu.push_back("A -> A '-' At");
+        Build_tree("-", 2);
       }
     }
   }
@@ -277,18 +338,22 @@ void A()
 void At()
 {
   Af();
-  Read(";", ";");
+  dt_bu.push_back("At -> Af");
   while (NextToken("operator", "*") || NextToken("identifier", "/"))
   {
     if (NextToken("operator", "*"))
     {
       Read("operator", "*");
       Af();
+      dt_bu.push_back("At -> At '*' Af");
+      Build_tree("*", 2);
     }
     else
     {
       Read("operator", "/");
       Af();
+      dt_bu.push_back("At -> At '/' Af");
+      Build_tree("/", 2);
     }
   }
 }
@@ -300,31 +365,38 @@ void Af()
   {
     Read("operator", "**");
     Af();
+    dt_bu.push_back("Af -> Ap '**' Af");
+    Build_tree("**", 2);
   }
   else
   {
-    Read(";", ";");
+    dt_bu.push_back("Af -> Ap");
   }
 }
 
 void Ap()
 {
   R();
-  Read(";", ";");
+  dt_bu.push_back("Ap -> R");
   while (NextToken("operator", "@"))
   {
     Read("operator", "@");
     Read("identifier", "any");
     R();
+    dt_bu.push_back("Ap -> Ap '@' '<identifier>' R");
+    Build_tree("@", 3);
   };
 }
 
 void R()
 {
   Rn();
+  dt_bu.push_back("R -> Rn");
   while (NextToken("identifier", "any") || NextToken("integer", "any") || NextToken("string", "any") || NextToken("identifier", "true") || NextToken("identifier", "false") || NextToken("identifier", "nil") || NextToken("(", "(") || NextToken("identifier", "dummy"))
   {
     Rn();
+    dt_bu.push_back("R -> R Rn");
+    Build_tree("gamma", 2);
   }
 }
 
@@ -333,36 +405,48 @@ void Rn()
   if (NextToken("identifier", "true"))
   {
     Read("identifier", "true");
+    dt_bu.push_back("Rn -> 'true'");
+    Build_tree("true", 0);
   }
   else if (NextToken("identifier", "false"))
   {
     Read("identifier", "false");
+    dt_bu.push_back("Rn -> 'false'");
+    Build_tree("false", 0);
   }
   else if (NextToken("identifier", "nil"))
   {
     Read("identifier", "nil");
+    dt_bu.push_back("Rn -> 'nil'");
+    Build_tree("nil", 0);
   }
   else if (NextToken("identifier", "dummy"))
   {
     Read("identifier", "dummy");
+    dt_bu.push_back("Rn -> 'dummy'");
+    Build_tree("dummy", 0);
   }
   else if (NextToken("(", "("))
   {
     Read("(", "(");
     E();
     Read(")", ")");
+    dt_bu.push_back("Rn -> '(' E ')'");
   }
   else if (NextToken("identifier", "any"))
   {
     Read("identifier", "any");
+    dt_bu.push_back("Rn -> '<identifier>'");
   }
   else if (NextToken("integer", "any"))
   {
     Read("integer", "any");
+    dt_bu.push_back("Rn -> '<integer>'");
   }
   else if (NextToken("string", "any"))
   {
     Read("string", "any");
+    dt_bu.push_back("Rn -> '<string>'");
   }
 }
 
@@ -373,27 +457,33 @@ void D()
   {
     Read("identifier", "within");
     D();
+    dt_bu.push_back("D -> Da 'within' D");
+    Build_tree("within", 2);
   }
   else
   {
-    Read(";", ";");
+    dt_bu.push_back("D -> Da");
   }
 }
 
 void Da()
 {
   Dr();
-  if (NextToken(";", ";"))
+  if (NextToken("identifier", "and"))
   {
-    Read(";", ";");
-  }
-  else
-  {
+    int n = 1;
     do
     {
       Read("identifier", "and");
       Dr();
+      n++;
     } while (NextToken("identifier", "and"));
+    dt_bu.push_back("Da -> Dr ( 'and' Dr )+");
+    Build_tree("and", n);
+  }
+  else
+  {
+    dt_bu.push_back("Da -> Dr");
   }
 }
 
@@ -403,17 +493,14 @@ void Dr()
   {
     Read("identifier", "rec");
     Db();
+    dt_bu.push_back("Dr -> 'rec' Db");
+    Build_tree("rec", 1);
   }
   else
   {
     Db();
-    Read(";", ";");
+    dt_bu.push_back("Dr -> Db");
   }
-}
-
-void Db()
-{ // TODO: complete this, How is this LL(1)
-  cout << "Running Db" << endl;
 }
 
 void Vb()
@@ -421,6 +508,7 @@ void Vb()
   if (NextToken("identifier", "any"))
   {
     Read("identifier", "any");
+    dt_bu.push_back("Vb -> '<identifier>'");
   }
   else if (NextToken("(", "("))
   {
@@ -433,16 +521,58 @@ void Vb()
     else
     {
       Read(")", ")");
+      dt_bu.push_back("Vb -> '(' ')'");
+      Build_tree("()", 0);
     }
+  }
+}
+
+void Db()
+{
+  if (NextToken("(", "("))
+  {
+    Read("(", "(");
+    D();
+    Read(")", ")");
+    dt_bu.push_back("Db -> '(' D ')'");
+  }
+  else if ((tokens[1].type == "," && tokens[1].value == ",") || (tokens[1].type == "operator" && tokens[1].value == "="))
+  {
+    Vl();
+    Read("operator", "=");
+    E();
+    dt_bu.push_back("Db -> Vl '=' E");
+    Build_tree("=", 2);
+  }
+  else
+  {
+    Read("identifier", "any");
+    int n = 2;
+    do
+    {
+      Vb();
+      n++;
+    } while (NextToken("identifier", "any") || NextToken("(", "("));
+    Read("operator", "=");
+    E();
+    dt_bu.push_back("Db -> '<identifier>' Vb+ '=' E");
+    Build_tree("fcn_form", n);
   }
 }
 
 void Vl()
 {
+  int n = 1;
   Read("identifier", "any");
   while (NextToken(",", ","))
   {
     Read(",", ",");
     Read("identifier", "any");
+    n++;
+  }
+  dt_bu.push_back("Vl -> '<identifier>' list ','");
+  if (n > 1)
+  {
+    Build_tree(",", n);
   }
 }

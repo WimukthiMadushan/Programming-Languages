@@ -57,11 +57,11 @@ void Build_tree(string token, int arguments)
 // Build_tree("Father", 3);
 // Print_tree(ast_bu.top());
 
-void Print_tree(Node *root)
+void printAST(Node *root)
 {
   for (int i = 0; i < root->children.size(); i++)
   {
-    Print_tree(root->children[i]);
+    printAST(root->children[i]);
   }
 
   cout << root->token << " : " << root->children.size() << endl;
