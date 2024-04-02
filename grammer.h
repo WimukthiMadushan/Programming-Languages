@@ -74,21 +74,27 @@ void E()
     D();
     Read("identifier", "in");
     E();
+    dt_bu.push_back("E -> 'let' D 'in' E");
   }
   else if (NextToken("identifier", "fn"))
   {
+    int n = 0;
+    dt_td.push_back("E -> 'fn' Vb+ '.' E");
     Read("identifier", "fn");
     do
     {
       Vb();
+      n++;
     } while (NextToken("identifier", "any") || NextToken("(", "("));
     Read("operator", ".");
     E();
+    dt_bu.push_back("E -> 'fn' Vb+ '.' E");
   }
   else
   {
     Ew();
     Read(";", ";");
+    dt_bu.push_back("E -> Ew");
   }
 }
 

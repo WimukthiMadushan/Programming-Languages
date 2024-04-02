@@ -3,13 +3,19 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <stack>
 using namespace std;
 
 #include "struct.h"
 #include "vocabulary.h"
 #include "grammer.h"
 
-vector<Token> tokens;
+vector<Token> tokens; // Token list
+vector<string> dt_td; // Derivation Tree Top Down for debugging
+vector<string> dt_bu; // Derivation Tree Bottom Up for debugging
+
+stack<Node *> ast_bu; // Abstract Syntax Tree Bottom Up stack
+
 string readFileToString(const string &filename)
 {
   ifstream file(filename);
@@ -48,7 +54,6 @@ int main()
   tokens = scanner(input);
   tokens = screener(tokens);
   printTokens(tokens);
-  Vl();
 }
 
 vector<Token> screener(vector<Token> tokens)
