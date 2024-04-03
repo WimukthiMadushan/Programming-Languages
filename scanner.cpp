@@ -49,22 +49,22 @@ void printTree(vector<string> rule);
 int main()
 {
   string input_file = "input.txt";
-  // string input = readFileToString(input_file);
+  string input = readFileToString(input_file);
   // string input = "- true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; 'gr'  - true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; ;";
-  string input = "5 & hello or help";
+  // string input = "5 & hello or help";
   tokens = scanner(input);
   tokens = screener(tokens);
-  printTokens(tokens);
+  // printTokens(tokens);
   cout << endl;
   E();
   if (tokens[0].type == "EOF")
   {
-    cout << "Grammer rules" << endl;
-    printTree(dt_bu);
-    cout << endl;
+    // cout << "Grammer rules" << endl;
+    // printTree(dt_bu);
+    // cout << endl;
 
-    cout << "AST" << endl;
-    printAST(ast_bu.top());
+    // cout << "AST" << endl;
+    printAST(ast_bu.top(), 0);
     cout << endl;
   }
   else

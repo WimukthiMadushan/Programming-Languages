@@ -33,7 +33,21 @@ void Read(string type, string value)
   {
     if (tokens[0].type == type)
     {
-      Build_tree(tokens[0].value, 0);
+      if (tokens[0].type == "identifier")
+      {
+        string token = "<ID:" + tokens[0].value + ">";
+        Build_tree(token, 0);
+      }
+      else if (tokens[0].type == "integer")
+      {
+        string token = "<INT:" + tokens[0].value + ">";
+        Build_tree(token, 0);
+      }
+      else if (tokens[0].type == "string")
+      {
+        string token = "<STR:" + tokens[0].value + ">";
+        Build_tree(token, 0);
+      }
       tokens.erase(tokens.begin());
     }
     else
