@@ -72,7 +72,7 @@ bool NextToken(string type, string value)
   if (value == "any" && tokens[0].type == type)
   {
     string val = tokens[0].value;
-    if ((val == "dummy") || (val == "nil") || (val == "within") || (val == "and") || (val == "rec") || (val == "false") || (val == "true") || (val == "ne") || (val == "eq") || (val == "le") || (val == "ls") || (val == "ge") || (val == "gr") || (val == "not") || (val == "or") || (val == "aug") || (val == "where") || (val == "fn") || (val == "let") || (val == "in"))
+    if (isReserved(val))
     {
       return false;
     }

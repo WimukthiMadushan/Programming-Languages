@@ -1,34 +1,7 @@
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <vector>
 #include <stack>
+
 using namespace std;
-
-#include "struct.h"
-#include "vocabulary.h"
-#include "grammer.h"
-
-vector<Token> tokens; // Token list
-vector<string> dt_td; // Derivation Tree Top Down for debugging
-vector<string> dt_bu; // Derivation Tree Bottom Up for debugging
-
-stack<Node *> ast_bu; // Abstract Syntax Tree Bottom Up stack
-
-string readFileToString(const string &filename)
-{
-  ifstream file(filename);
-  if (!file.is_open())
-  {
-    cerr << "Error opening file: " << filename << endl;
-    return "";
-  }
-  stringstream buffer;
-  buffer << file.rdbuf();
-  file.close();
-  return buffer.str();
-}
 
 string addSpace(string buffer, char space_char)
 {
@@ -41,39 +14,7 @@ string addSpace(string buffer, char space_char)
   return buffer;
 }
 
-vector<Token> scanner(string input);
-void printTokens(vector<Token> tokens);
-vector<Token> screener(vector<Token> tokens);
-void printTree(vector<string> rule);
-
-int main()
-{
-  string input_file = "input.txt";
-  string input = readFileToString(input_file);
-  // string input = "- true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; 'gr'  - true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; ;";
-  // string input = "5 & hello or help";
-  tokens = scanner(input);
-  tokens = screener(tokens);
-  // printTokens(tokens);
-  cout << endl;
-  E();
-  if (tokens[0].type == "EOF")
-  {
-    // cout << "Grammer rules" << endl;
-    // printTree(dt_bu);
-    // cout << endl;
-
-    // cout << "AST" << endl;
-    printAST(ast_bu.top(), 0);
-    cout << endl;
-  }
-  else
-  {
-    cout << "Input is not valid" << endl;
-  }
-}
-
-vector<Token> screener(vector<Token> tokens)
+void screener()
 {
   vector<Token> new_tokens;
   for (const auto &i : tokens)
@@ -88,12 +29,11 @@ vector<Token> screener(vector<Token> tokens)
       new_tokens.push_back(i);
     }
   }
-  return new_tokens;
+  tokens = new_tokens;
 }
 
-vector<Token> scanner(string input)
+void scanner(string input)
 {
-  vector<Token> tokens;
 
   input = input + '\n';
 
@@ -258,29 +198,4 @@ vector<Token> scanner(string input)
     }
   }
   tokens.push_back(Token("EOF", "EOF"));
-  return tokens;
-}
-
-void printTokens(vector<Token> tokens)
-{
-  for (const auto &i : tokens)
-  {
-    if (i.type == "EOF")
-    {
-      cout << i.type << " : " << i.value << endl;
-      break;
-    }
-    else
-    {
-      cout << i.type << " : " << i.value << std::endl;
-    }
-  }
-}
-
-void printTree(vector<string> rule)
-{
-  for (const auto &i : rule)
-  {
-    cout << i << endl;
-  }
 }

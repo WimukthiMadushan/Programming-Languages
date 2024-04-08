@@ -70,3 +70,17 @@ bool isPunction(char newElement)
   }
   return false;
 }
+
+bool isReserved(string token)
+{
+  int size = 20;
+  string reserved[size] = {"dummy", "nil", "within", "and", "rec", "false", "true", "ne", "eq", "le", "ls", "ge", "gr", "not", "or", "aug", "where", "fn", "let", "in"};
+  for (int i = 0; i < size; ++i)
+  {
+    if (reserved[i] == token)
+    {
+      return true;
+    }
+  }
+  return false;
+}

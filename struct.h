@@ -49,25 +49,7 @@ void Build_tree(string token, int arguments)
   ast_bu.push(new_node);
 }
 
-//? Sample code
-// Build_tree("First Child", 0);
-// Build_tree("Son of second child", 0);
-// Build_tree("Second Child", 1);
-// Build_tree("Third Child", 0);
-// Build_tree("Father", 3);
-// Print_tree(ast_bu.top());
-
-// void printAST(Node *root)
-// {
-//   for (int i = 0; i < root->children.size(); i++)
-//   {
-//     printAST(root->children[i]);
-//   }
-
-//   cout << root->token << " : " << root->children.size() << endl;
-// }
-
-void printAST(Node *root, int depth)
+void AST(Node *root, int depth)
 {
   for (int i = 0; i < depth; i++)
   {
@@ -77,6 +59,43 @@ void printAST(Node *root, int depth)
   depth++;
   for (int i = 0; i < root->children.size(); i++)
   {
-    printAST(root->children[i], depth);
+    AST(root->children[i], depth);
   }
+}
+
+void printAST()
+{
+  cout << endl;
+  AST(ast_bu.top(), 0);
+  cout << endl;
+}
+
+void printTokens()
+{
+  cout << endl
+       << "Tokens" << endl;
+  for (const auto &i : tokens)
+  {
+    if (i.type == "EOF")
+    {
+      cout << i.type << " : " << i.value << endl;
+      break;
+    }
+    else
+    {
+      cout << i.type << " : " << i.value << std::endl;
+    }
+  }
+  cout << endl;
+}
+
+void printTree()
+{
+  cout << endl
+       << "Derivation Tree Top Down" << endl;
+  for (const auto &i : dt_bu)
+  {
+    cout << i << endl;
+  }
+  cout << endl;
 }
