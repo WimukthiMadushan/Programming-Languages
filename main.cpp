@@ -41,22 +41,22 @@ int main()
   // TODO: Try different strings here. Comment all below to read the input_file.
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
+  input = "let x = 2 in x + 1";
 
-  //! Lex
-  scanner(input);
-  screener();
+  try
+  { //! Lex
+    scanner(input);
+    screener();
 
-  //! Parser
-  E();
-  if (tokens[0].type == "EOF")
-  {
+    //! Parser
+    parser();
+
+    //! Standardize
+    standardize_tree(ast_bu.top());
     printAST();
   }
-  else
+  catch (...)
   {
-    cout << "Input is not valid" << endl;
+    return 0;
   }
-
-  //! Standardize
-  // Call the function
 }

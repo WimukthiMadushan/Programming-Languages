@@ -27,8 +27,34 @@ void Db();
 void Vb();
 void Vl();
 
+void parser()
+{
+  try
+  {
+    E();
+  }
+  catch (const char *errorMessage)
+  {
+    cout << "Syntax Error" << endl;
+    throw "Syntax Error";
+    return;
+  }
+
+  // if there are still tokens remaining.
+  if (tokens[0].type != "EOF")
+  {
+    cout << "Input is not valid";
+    throw "Input is not valid";
+  }
+}
+
 void Read(string type, string value)
 {
+  if (tokens.empty())
+  {
+    cout << "Expected \"" + type + "\" : \"" + value + "\", got EOF" << endl;
+    throw "Error";
+  }
   if (value == "")
   {
     if (tokens[0].type == type)
@@ -69,11 +95,17 @@ void Read(string type, string value)
 
 bool NextToken(string type, string value)
 {
+  if (tokens.empty())
+  {
+    cout << "Expected \"" + type + "\" : \"" + value + "\", got EOF" << endl;
+    throw "Error";
+  }
   if (value == "" && tokens[0].type == type)
   {
     string val = tokens[0].value;
     if (isReserved(val))
     {
+
       return false;
     }
     else

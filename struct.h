@@ -11,17 +11,12 @@ typedef struct Token
   Token(string type, string value) : type(type), value(value) {}
 } Token;
 
-typedef struct Node
+typedef struct Node // Building block of abstract syntax tree
 {
   string token;
   vector<Node *> children;
 
   Node(string token) : token(token), children() {}
-
-  void addChild(Node *child)
-  {
-    children.insert(children.begin(), child);
-  }
 } Node;
 
 extern vector<Token> tokens; // Token list
