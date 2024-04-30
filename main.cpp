@@ -10,9 +10,10 @@ using namespace std;
 #include "vocabulary.h"
 #include "grammer.h"
 #include "lex.h"
+#include "standardize.h"
 
 vector<Token> tokens; // Token list
-vector<string> dt_td; // Derivation Tree Top Down for debugging
+
 vector<string> dt_bu; // Derivation Tree Bottom Up for debugging
 
 stack<Node *> ast_bu; // Abstract Syntax Tree Bottom Up stack
@@ -38,14 +39,14 @@ int main()
   input = readFileToString(input_file);
 
   // TODO: Try different strings here. Comment all below to read the input_file.
-  // input = "- true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; 'gr'  - true ;; @ hello false; ** true ;; @ hello false; ; ; * true ;; @ hello false; ** true ;; @ hello false; ; ;";
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
 
+  //! Lex
   scanner(input);
   screener();
 
-  // Parser
+  //! Parser
   E();
   if (tokens[0].type == "EOF")
   {
@@ -55,4 +56,7 @@ int main()
   {
     cout << "Input is not valid" << endl;
   }
+
+  //! Standardize
+  // Call the function
 }

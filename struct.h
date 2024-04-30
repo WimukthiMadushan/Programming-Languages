@@ -24,8 +24,7 @@ typedef struct Node
   }
 } Node;
 
-extern vector<Token> tokens;
-extern vector<string> dt_td; // Derivation Tree Top Down
+extern vector<Token> tokens; // Token list
 extern vector<string> dt_bu; // Derivation Tree Bottom Up
 
 extern stack<Node *> ast_bu; // Abstract Syntax Tree Bottom Up

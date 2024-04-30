@@ -29,7 +29,7 @@ void Vl();
 
 void Read(string type, string value)
 {
-  if (value == "any")
+  if (value == "")
   {
     if (tokens[0].type == type)
     {
@@ -69,7 +69,7 @@ void Read(string type, string value)
 
 bool NextToken(string type, string value)
 {
-  if (value == "any" && tokens[0].type == type)
+  if (value == "" && tokens[0].type == type)
   {
     string val = tokens[0].value;
     if (isReserved(val))
@@ -108,7 +108,7 @@ void E()
     {
       Vb();
       n++;
-    } while (NextToken("identifier", "any") || NextToken("(", "("));
+    } while (NextToken("identifier", "") || NextToken("(", "("));
     Read("operator", ".");
     E();
     dt_bu.push_back("E -> 'fn' Vb+ '.' E");
@@ -395,7 +395,7 @@ void Ap()
   while (NextToken("operator", "@"))
   {
     Read("operator", "@");
-    Read("identifier", "any");
+    Read("identifier", "");
     R();
     dt_bu.push_back("Ap -> Ap '@' '<identifier>' R");
     Build_tree("@", 3);
@@ -406,7 +406,7 @@ void R()
 {
   Rn();
   dt_bu.push_back("R -> Rn");
-  while (NextToken("identifier", "any") || NextToken("integer", "any") || NextToken("string", "any") || NextToken("identifier", "true") || NextToken("identifier", "false") || NextToken("identifier", "nil") || NextToken("(", "(") || NextToken("identifier", "dummy"))
+  while (NextToken("identifier", "") || NextToken("integer", "") || NextToken("string", "") || NextToken("identifier", "true") || NextToken("identifier", "false") || NextToken("identifier", "nil") || NextToken("(", "(") || NextToken("identifier", "dummy"))
   {
     Rn();
     dt_bu.push_back("R -> R Rn");
@@ -447,19 +447,19 @@ void Rn()
     Read(")", ")");
     dt_bu.push_back("Rn -> '(' E ')'");
   }
-  else if (NextToken("identifier", "any"))
+  else if (NextToken("identifier", ""))
   {
-    Read("identifier", "any");
+    Read("identifier", "");
     dt_bu.push_back("Rn -> '<identifier>'");
   }
-  else if (NextToken("integer", "any"))
+  else if (NextToken("integer", ""))
   {
-    Read("integer", "any");
+    Read("integer", "");
     dt_bu.push_back("Rn -> '<integer>'");
   }
-  else if (NextToken("string", "any"))
+  else if (NextToken("string", ""))
   {
-    Read("string", "any");
+    Read("string", "");
     dt_bu.push_back("Rn -> '<string>'");
   }
 }
@@ -519,15 +519,15 @@ void Dr()
 
 void Vb()
 {
-  if (NextToken("identifier", "any"))
+  if (NextToken("identifier", ""))
   {
-    Read("identifier", "any");
+    Read("identifier", "");
     dt_bu.push_back("Vb -> '<identifier>'");
   }
   else if (NextToken("(", "("))
   {
     Read("(", "(");
-    if (NextToken("identifier", "any"))
+    if (NextToken("identifier", ""))
     {
       Vl();
       Read(")", ")");
@@ -560,13 +560,13 @@ void Db()
   }
   else
   {
-    Read("identifier", "any");
+    Read("identifier", "");
     int n = 2;
     do
     {
       Vb();
       n++;
-    } while (NextToken("identifier", "any") || NextToken("(", "("));
+    } while (NextToken("identifier", "") || NextToken("(", "("));
     Read("operator", "=");
     E();
     dt_bu.push_back("Db -> '<identifier>' Vb+ '=' E");
@@ -577,11 +577,11 @@ void Db()
 void Vl()
 {
   int n = 1;
-  Read("identifier", "any");
+  Read("identifier", "");
   while (NextToken(",", ","))
   {
     Read(",", ",");
-    Read("identifier", "any");
+    Read("identifier", "");
     n++;
   }
   dt_bu.push_back("Vl -> '<identifier>' list ','");
