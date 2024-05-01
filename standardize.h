@@ -5,6 +5,14 @@ using namespace std;
 
 void standardize(Node *);
 void standardize_list(Node *);
+void standardize_tree(Node *);
+void standardize_tree_list(Node *);
+
+void standardizer()
+{
+  standardize_tree(ast_bu.top());
+  standardize_tree_list(ast_bu.top());
+}
 
 void standardize_tree(Node *node)
 {

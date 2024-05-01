@@ -50,10 +50,7 @@ int main()
 
     //! Parser
     parser();
-
-    //! Standardize
-    standardize_tree(ast_bu.top());
-    standardize_tree_list(ast_bu.top());
+    standardizer();
 
     printAST();
   }
