@@ -1,2 +1,2 @@
-ize_tree(ast_bu.top());
-  // printAST(
+(ast_bu.top());
+    // standardize_tree

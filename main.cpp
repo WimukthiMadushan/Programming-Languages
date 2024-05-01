@@ -41,7 +41,7 @@ int main()
   // TODO: Try different strings here. Comment all below to read the input_file.
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
-  input = "let x = 2 in x + 1";
+  // input = "fn (id1, id2) . E";
 
   try
   { //! Lex
@@ -53,6 +53,8 @@ int main()
 
     //! Standardize
     standardize_tree(ast_bu.top());
+    standardize_tree_list(ast_bu.top());
+
     printAST();
   }
   catch (...)
