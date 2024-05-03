@@ -1,0 +1,6 @@
+(fn x. x < 0 -> -x | x) 3
+
+let x = 3 in x + 1
+
+//is something like an arrow function
+//the funcion doesn't have a name

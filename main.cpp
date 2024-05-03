@@ -11,6 +11,7 @@ using namespace std;
 #include "grammer.h"
 #include "lex.h"
 #include "standardize.h"
+#include "cse.h"
 
 vector<Token> tokens; // Token list
 
@@ -41,7 +42,10 @@ int main()
   // TODO: Try different strings here. Comment all below to read the input_file.
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
-  // input = "fn (id1, id2) . E";
+
+  // input = "(fn x . x + 1 ) 3";
+  // input = "let x = 3 in x + 1";
+  input = "3 + 2";
 
   try
   { //! Lex
@@ -52,7 +56,8 @@ int main()
     parser();
     standardizer();
 
-    printAST();
+    // printAST();
+    cse();
   }
   catch (...)
   {

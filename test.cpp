@@ -1,21 +1,81 @@
 #include <iostream>
-#include <stack>
+#include <vector>
+#include <string>
+
+enum class Type
+{
+  INTEGER,
+  STRING
+};
+
+std::string typeToString(Type t)
+{
+  switch (t)
+  {
+  case Type::INTEGER:
+    return "INTEGER";
+  case Type::STRING:
+    return "STRING";
+  default:
+    return "UNKNOWN";
+  }
+}
+
+class Base
+{
+protected:
+  Type type;
+
+public:
+  Base(Type t) : type(t) {}
+  virtual ~Base() {}
+  virtual void print() const = 0;
+  Type getType() const { return type; }
+};
+
+class Integer : public Base
+{
+private:
+  int value;
+
+public:
+  Integer(int val) : Base(Type::INTEGER), value(val) {}
+  void print() const override
+  {
+    std::cout << "Type: " << typeToString(getType()) << ", Value: " << value << std::endl;
+  }
+};
+
+class String : public Base
+{
+private:
+  std::string value;
+
+public:
+  String(const std::string &val) : Base(Type::STRING), value(val) {}
+  void print() const override
+  {
+    std::cout << "Type: " << typeToString(getType()) << ", Value: " << value << std::endl;
+  }
+};
 
 int main()
 {
-  std::stack<int> myStack;
+  std::vector<Base *> objects;
 
-  // Push some elements onto the stack
-  // myStack.push(20);
-  // myStack.push(30);
+  objects.push_back(new Integer(42));
+  objects.push_back(new String("Hello, world!"));
 
-  // Get the address of the lowest element
-  int *lowestAddress = &myStack.top(); // Address of the lowest element
-  std::cout << "Address of the lowest element: " << lowestAddress << std::endl;
-  myStack.push(10);
-  std::cout << "Address of the lowest element: " << lowestAddress << std::endl;
+  for (const auto &obj : objects)
+  {
+    obj->print();
+  }
 
-  // Print the address of the lowest element
+  // Clean up
+  for (auto &obj : objects)
+  {
+    delete obj;
+  }
 
   return 0;
 }

@@ -11,7 +11,7 @@ void standardize_tree_list(Node *);
 void standardizer()
 {
   standardize_tree(ast_bu.top());
-  standardize_tree_list(ast_bu.top());
+  // standardize_tree_list(ast_bu.top());
 }
 
 void standardize_tree(Node *node)
@@ -64,46 +64,46 @@ void standardize(Node *node)
 
     *node = *equal;
   }
-  else if (node->token == "tau")
-  {
-    Node *temp_head = new Node("nil");
-    for (auto E : node->children)
-    {
-      Node *gamma = new Node("gamma");
-      gamma->children.push_back(new Node("gamma"));
-      gamma->children[0]->children.push_back(new Node("aug"));
-      gamma->children[0]->children.push_back(temp_head);
-      gamma->children.push_back(E);
-      temp_head = gamma;
-    }
-    *node = *temp_head;
-  }
-  else if (node->token == "->")
-  {
-    Node *B = node->children[0];
-    Node *T = node->children[1];
-    Node *F = node->children[2];
+  // else if (node->token == "tau")
+  // {
+  //   Node *temp_head = new Node("nil");
+  //   for (auto E : node->children)
+  //   {
+  //     Node *gamma = new Node("gamma");
+  //     gamma->children.push_back(new Node("gamma"));
+  //     gamma->children[0]->children.push_back(new Node("aug"));
+  //     gamma->children[0]->children.push_back(temp_head);
+  //     gamma->children.push_back(E);
+  //     temp_head = gamma;
+  //   }
+  //   *node = *temp_head;
+  // }
+  // else if (node->token == "->")
+  // {
+  //   Node *B = node->children[0];
+  //   Node *T = node->children[1];
+  //   Node *F = node->children[2];
 
-    Node *new_node = new Node("gamma");
-    new_node->children.push_back(new Node("gamma"));
-    new_node->children.push_back(new Node("nil"));
-    new_node->children[0]->children.push_back(new Node("gamma"));
-    new_node->children[0]->children.push_back(new Node("lambda"));
+  //   Node *new_node = new Node("gamma");
+  //   new_node->children.push_back(new Node("gamma"));
+  //   new_node->children.push_back(new Node("nil"));
+  //   new_node->children[0]->children.push_back(new Node("gamma"));
+  //   new_node->children[0]->children.push_back(new Node("lambda"));
 
-    new_node->children[0]->children[1]->children.push_back(new Node("()"));
-    new_node->children[0]->children[1]->children.push_back(F);
+  //   new_node->children[0]->children[1]->children.push_back(new Node("()"));
+  //   new_node->children[0]->children[1]->children.push_back(F);
 
-    new_node->children[0]->children[0]->children.push_back(new Node("gamma"));
-    new_node->children[0]->children[0]->children.push_back(new Node("lambda"));
+  //   new_node->children[0]->children[0]->children.push_back(new Node("gamma"));
+  //   new_node->children[0]->children[0]->children.push_back(new Node("lambda"));
 
-    new_node->children[0]->children[0]->children[0]->children.push_back(new Node("Cond"));
-    new_node->children[0]->children[0]->children[0]->children.push_back(B);
+  //   new_node->children[0]->children[0]->children[0]->children.push_back(new Node("Cond"));
+  //   new_node->children[0]->children[0]->children[0]->children.push_back(B);
 
-    new_node->children[0]->children[0]->children[1]->children.push_back(new Node("()"));
-    new_node->children[0]->children[0]->children[1]->children.push_back(T);
+  //   new_node->children[0]->children[0]->children[1]->children.push_back(new Node("()"));
+  //   new_node->children[0]->children[0]->children[1]->children.push_back(T);
 
-    *node = *new_node;
-  }
+  //   *node = *new_node;
+  // }
   else if (node->token == "where")
   {
     if (node->children[1]->token == "=")
@@ -165,24 +165,24 @@ void standardize(Node *node)
 
     *node = *new_node;
   }
-  else if (node->token == "not")
-  {
-    Node *E = node->children[0];
-    Node *new_node = new Node("gamma");
-    new_node->children.push_back(new Node("not"));
-    new_node->children.push_back(E);
+  // else if (node->token == "not")
+  // {
+  //   Node *E = node->children[0];
+  //   Node *new_node = new Node("gamma");
+  //   new_node->children.push_back(new Node("not"));
+  //   new_node->children.push_back(E);
 
-    *node = *new_node;
-  }
-  else if (node->token == "neg")
-  {
-    Node *E = node->children[0];
-    Node *new_node = new Node("gamma");
-    new_node->children.push_back(new Node("neg"));
-    new_node->children.push_back(E);
+  //   *node = *new_node;
+  // }
+  // else if (node->token == "neg")
+  // {
+  //   Node *E = node->children[0];
+  //   Node *new_node = new Node("gamma");
+  //   new_node->children.push_back(new Node("neg"));
+  //   new_node->children.push_back(E);
 
-    *node = *new_node;
-  }
+  //   *node = *new_node;
+  // }
   else if (node->token == "rec")
   {
     if (node->children[0]->token == "=")
@@ -204,16 +204,16 @@ void standardize(Node *node)
       throw "Error";
     }
   }
-  else if (isOp(node->token))
-  {
-    Node *gamma = new Node("gamma");
-    gamma->children.push_back(new Node("gamma"));
-    gamma->children.push_back(node->children[1]);
-    gamma->children[0]->children.push_back(new Node(node->token));
-    gamma->children[0]->children.push_back(node->children[0]);
+  // else if (isOp(node->token))
+  // {
+  //   Node *gamma = new Node("gamma");
+  //   gamma->children.push_back(new Node("gamma"));
+  //   gamma->children.push_back(node->children[1]);
+  //   gamma->children[0]->children.push_back(new Node(node->token));
+  //   gamma->children[0]->children.push_back(node->children[0]);
 
-    *node = *gamma;
-  }
+  //   *node = *gamma;
+  // }
   else if (node->token == "lambda")
   {
     int size = node->children.size();
