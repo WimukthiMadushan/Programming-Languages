@@ -1,81 +1,38 @@
 #include <iostream>
-#include <vector>
-#include <string>
 
-enum class Type
+struct NodeB; // Forward declaration of NodeB
+
+struct NodeA
 {
-  INTEGER,
-  STRING
+  int data;
+  NodeB *nextB; // Pointer to NodeB
+
+  // Constructor
+  NodeA(int d) : data(d), nextB(nullptr) {}
 };
 
-std::string typeToString(Type t)
+struct NodeB
 {
-  switch (t)
-  {
-  case Type::INTEGER:
-    return "INTEGER";
-  case Type::STRING:
-    return "STRING";
-  default:
-    return "UNKNOWN";
-  }
-}
+  float value;
+  NodeA *prevA; // Pointer to NodeA
 
-class Base
-{
-protected:
-  Type type;
-
-public:
-  Base(Type t) : type(t) {}
-  virtual ~Base() {}
-  virtual void print() const = 0;
-  Type getType() const { return type; }
-};
-
-class Integer : public Base
-{
-private:
-  int value;
-
-public:
-  Integer(int val) : Base(Type::INTEGER), value(val) {}
-  void print() const override
-  {
-    std::cout << "Type: " << typeToString(getType()) << ", Value: " << value << std::endl;
-  }
-};
-
-class String : public Base
-{
-private:
-  std::string value;
-
-public:
-  String(const std::string &val) : Base(Type::STRING), value(val) {}
-  void print() const override
-  {
-    std::cout << "Type: " << typeToString(getType()) << ", Value: " << value << std::endl;
-  }
+  // Constructor
+  NodeB(float v) : value(v), prevA(nullptr) {}
 };
 
 int main()
 {
-  std::vector<Base *> objects;
+  // Creating nodes
+  NodeA a(10);
+  NodeB b(3.14);
 
-  objects.push_back(new Integer(42));
-  objects.push_back(new String("Hello, world!"));
+  // Establishing connections
+  a.nextB = &b;
+  b.prevA = &a;
 
-  for (const auto &obj : objects)
-  {
-    obj->print();
-  }
-
-  // Clean up
-  for (auto &obj : objects)
-  {
-    delete obj;
-  }
+  // Accessing data
+  std::cout << "Node A data: " << a.data << std::endl;
+  std::cout << "Node B value: " << b.value << std::endl;
 
   return 0;
 }

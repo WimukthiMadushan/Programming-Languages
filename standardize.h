@@ -204,7 +204,7 @@ void standardize(Node *node)
       throw "Error";
     }
   }
-  // else if (isOp(node->token))
+  // else if (isBOp(node->token))
   // {
   //   Node *gamma = new Node("gamma");
   //   gamma->children.push_back(new Node("gamma"));

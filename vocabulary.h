@@ -85,10 +85,24 @@ bool isReserved(string token)
   return false;
 }
 
-bool isOp(string token)
+bool isBOp(string token)
 {
   int size = 14;
   string op[size] = {"aug", "or", "&", "+", "-", "/", "**", "*", "gr", "ge", "le", "ls", "eq", "ne"};
+  for (int i = 0; i < size; ++i)
+  {
+    if (op[i] == token)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool isUOp(string token)
+{
+  int size = 2;
+  string op[size] = {"not", "neg"};
   for (int i = 0; i < size; ++i)
   {
     if (op[i] == token)
