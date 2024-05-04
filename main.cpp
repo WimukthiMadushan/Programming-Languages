@@ -43,9 +43,9 @@ int main()
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
 
-  input = "(fn x . x + 1 ) 3";
+  input = "(fn x . x - 1 )4 * 2";
   // input = "let x = 3 in x + 1";
-  // input = "true -> 1 | (0*2)";
+  // input = "3 ge 6 -> 1 | (4*2)";
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
 
   try
