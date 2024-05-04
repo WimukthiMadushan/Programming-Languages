@@ -27,51 +27,48 @@ vector<vector<Base *>> control_structures; // Stores each function present in th
 //! Different Base types
 class Integer : public Base
 {
-  int value;
-
 public:
+  int value;
   Integer(int value) : Base("integer"), value(value){};
 };
 
 class Operator : public Base
 {
-  string op;
-
 public:
+  string op;
   Operator(string op) : Base("operator"), op(op){};
 };
 
 class Environment : public Base
 {
-  int env_number;
-
 public:
+  int env_number;
   Environment(int env_number) : Base("environment"), env_number(env_number){};
 };
 
 class Identifier : public Base
 {
-  string name;
-
 public:
+  string name;
   Identifier(string name) : Base("identifier"), name(name){};
 };
 
 class String : public Base
 {
-  string value;
-
 public:
+  string value;
   String(string value) : Base("string"), value(value) {}
 };
 
-//! check these
 class Lambda : public Base
 {
+public:
   vector<string> bound;
-  int base;
-  int env;
+  int base = -1;
+  int env = -1;
 };
+
+//! check these
 
 class Boolean : public Base
 {

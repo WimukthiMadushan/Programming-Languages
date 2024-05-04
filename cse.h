@@ -8,7 +8,6 @@ int env_count = 0;
 
 void pre_order_traversal(Node *root, int environment)
 {
-
   // Creating the control structures
   if (isOp(root->token))
   {
@@ -67,17 +66,57 @@ void evaluate()
   add_env_to_control(0);
   while (control_stk.size() != 1)
   {
-    control_stk.pop();
+    string the_type = control_stk.top()->type;
+    if (the_type == "integer")
+    {
+      stack_stk.push(control_stk.top());
+      control_stk.pop();
+    }
+    if (the_type == "operator")
+    {
+      int a = dynamic_cast<Integer *>(stack_stk.top())->value;
+      stack_stk.pop();
+      int b = dynamic_cast<Integer *>(stack_stk.top())->value;
+      stack_stk.pop();
+      string op = control_stk.top()->op;
+      control_stk.pop();
+      if (op == "+")
+      {
+        stack_stk.push(new Integer(a + b));
+      }
+      else if (op == "-")
+      {
+        stack_stk.push(new Integer(a - b));
+      }
+      else if (op == "*")
+      {
+        stack_stk.push(new Integer(a * b));
+      }
+      else if (op == "/")
+      {
+        stack_stk.push(new Integer(a / b));
+      }
+      else if (op == "**")
+      {
+        stack_stk.push(new Integer(pow(a, b)));
+      }
+      else
+      {
+        cout << "operator " << op << " not found" << endl;
+        throw "Error";
+      }
+    }
   }
-  while (stack_stk.size() != 1)
-  {
-    stack_stk.pop();
-    // cout << stack_stk.top()->type << endl; // Output something
-  }
+  // while (stack_stk.size() != 1)
+  // {
+  //   stack_stk.pop();
+  //   // cout << stack_stk.top()->type << endl; // Output something
+  // }
   cout << "Exited" << endl;
+  cout << stack_stk.pop()->value << endl;
   if (stack_stk.top() == control_stk.top())
   {
-    cout << "Successful" << endl;
+    cout << "Code Successful" << endl;
     return;
   }
   else

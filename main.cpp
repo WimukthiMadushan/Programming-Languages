@@ -46,6 +46,7 @@ int main()
   // input = "(fn x . x + 1 ) 3";
   // input = "let x = 3 in x + 1";
   input = "3 + 2";
+  // input = "(fn (x, y). x+y)(5,6)";
 
   try
   { //! Lex
@@ -56,8 +57,8 @@ int main()
     parser();
     standardizer();
 
-    // printAST();
-    cse();
+    printAST();
+    // cse();
   }
   catch (...)
   {

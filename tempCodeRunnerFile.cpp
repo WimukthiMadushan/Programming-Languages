@@ -1,2 +1,1 @@
-(ast_bu.top());
-    // standardize_tree
+x, y). x+y)(5,6)";
