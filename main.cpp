@@ -43,10 +43,12 @@ int main()
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
 
-  input = "(fn x . x - 1 )4 * 2";
+  // input = "(fn x . x + 1 )4 * 6";
   // input = "let x = 3 in x + 1";
   // input = "3 ge 6 -> 1 | (4*2)";
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
+  input = "(fn x. fn w . x + w) 5 6";
+  input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
 
   try
   { //! Lex
