@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 
+using namespace std;
+
 // lambda: arg_str2 = arguments, arg_int = environment, arg_int2 = body
 // delta: arg_int = function_index
 // gamma: none
@@ -52,15 +54,142 @@ vector<vector<Base *>> control_structures; // Stores each function present in th
 // In built functions
 void add_in_built_to_env(Base *env)
 {
+  // Defining internal variables
   env->children.push_back(new Base("identifier", "hundred", new Base("integer", 100)));
+  // Defining inbuilt functions
   env->children.push_back(new Base("identifier", "Print", new Base("lambda", -1)));
+  env->children.push_back(new Base("identifier", "Isinteger", new Base("lambda", -2)));
+  env->children.push_back(new Base("identifier", "Isstring", new Base("lambda", -3)));
+  env->children.push_back(new Base("identifier", "Istuple", new Base("lambda", -4)));
+  env->children.push_back(new Base("identifier", "Isfunction", new Base("lambda", -5)));
+  env->children.push_back(new Base("identifier", "Isdummy", new Base("lambda", -6)));
+  env->children.push_back(new Base("identifier", "Stem", new Base("lambda", -7)));
+  env->children.push_back(new Base("identifier", "Stern", new Base("lambda", -8)));
+  env->children.push_back(new Base("identifier", "Conc", new Base("lambda", -9)));
+}
+
+void print_Base(Base *env)
+{
+  if (env->type == "tuple")
+  {
+    cout << "(";
+    if (env->children.size() > 0)
+    {
+      print_Base(env->children[0]);
+    }
+    for (int i = 1; i < env->children.size(); i++)
+    {
+      cout << ",";
+      print_Base(env->children[i]);
+    }
+    cout << ")";
+  }
+  else if (env->type == "integer")
+  {
+    cout << env->arg_int;
+  }
+  else if (env->type == "boolean")
+  {
+    cout << env->arg_str;
+  }
+  else if (env->type == "string")
+  {
+    cout << "\"" << env->arg_str << "\"";
+  }
 }
 
 void in_built_functions(Base *func, Base *func_args)
 {
-  if (func->arg_int == -1)
+  int val = func->arg_int;
+  if (val == -1)
   {
-    cout << func_args->arg_int << endl;
+    print_Base(func_args);
+    cout << endl;
     stack_stk.push(new Base("dummy"));
+  }
+  else if (val == -2)
+  {
+    if (func_args->type == "integer")
+    {
+      stack_stk.push(new Base("boolean", "true"));
+    }
+    else
+    {
+      stack_stk.push(new Base("boolean", "false"));
+    }
+  }
+  else if (val == -3)
+  {
+    if (func_args->type == "string")
+    {
+      stack_stk.push(new Base("boolean", "true"));
+    }
+    else
+    {
+      stack_stk.push(new Base("boolean", "false"));
+    }
+  }
+  else if (val == -4)
+  {
+    if (func_args->type == "tuple")
+    {
+      stack_stk.push(new Base("boolean", "true"));
+    }
+    else
+    {
+      stack_stk.push(new Base("boolean", "false"));
+    }
+  }
+  else if (val == -5)
+  {
+    if (func_args->type == "lambda")
+    {
+      stack_stk.push(new Base("boolean", "true"));
+    }
+    else
+    {
+      stack_stk.push(new Base("boolean", "false"));
+    }
+  }
+  else if (val == -6)
+  {
+    if (func_args->type == "dummy")
+    {
+      stack_stk.push(new Base("boolean", "true"));
+    }
+    else
+    {
+      stack_stk.push(new Base("boolean", "false"));
+    }
+  }
+  else if (val == -7)
+  {
+    if (func_args->type != "string")
+    {
+      cout << "Expect a string with Stem" << endl;
+      throw "Error";
+    }
+    stack_stk.push(new Base("string", func_args->arg_str.substr(0, 1)));
+  }
+  else if (val == -8)
+  {
+    if (func_args->type != "string")
+    {
+      cout << "Expect a string with Stern" << endl;
+      throw "Error";
+    }
+    stack_stk.push(new Base("string", func_args->arg_str.substr(1)));
+  }
+  else if (val == -9) //! Complete this and eq and neq for strings
+  {
+    if (func_args->type != "string" || stack_stk.top()->type != "string")
+    {
+      cout << "Expect two strings with Conc" << endl;
+      throw "Error";
+    }
+    Base *temp = stack_stk.top();
+    stack_stk.pop();
+    string output = func_args->arg_str + temp->arg_str;
+    stack_stk.push(new Base("string", output));
   }
 }

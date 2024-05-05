@@ -1,9 +1,5 @@
-tau
 aug
 -> 
-or & not gr ge ls le eq ne
-+ - neg * // **
-true false
 nil
 dummy
 ()

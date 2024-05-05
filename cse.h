@@ -125,7 +125,7 @@ void pre_order_traversal(Node *root, int environment)
       else
       {
         // This is a string
-        string sliced = root->token.substr(5, root->token.length() - 6);
+        string sliced = root->token.substr(7, root->token.length() - 10);
         control_structures[environment].push_back(new Base("string", sliced));
       }
     }
@@ -148,6 +148,15 @@ void pre_order_traversal(Node *root, int environment)
     else if (root->token == "gamma") // Complete
     {
       control_structures[environment].push_back(new Base("gamma"));
+    }
+    //! Check the suitable tokens
+    else if (root->token == "dummy")
+    {
+      control_structures[environment].push_back(new Base("dummy"));
+    }
+    else if (root->token == "nil")
+    {
+      control_structures[environment].push_back(new Base("tuple"));
     }
 
     // Iterating through the children
@@ -381,8 +390,16 @@ void rules(string type)
     }
     else if (op == "aug") // Complete for other operations if there are any including aug
     {
-      cout << "aug is incomplete" << endl;
-      throw "Error";
+      if (stack_stk.top()->type != "tuple")
+      {
+        cout << "Cannot append to " << stack_stk.top()->type << endl;
+        throw "Error";
+      }
+      Base *list = stack_stk.top();
+      stack_stk.pop();
+      list->children.push_back(stack_stk.top());
+      stack_stk.pop();
+      stack_stk.push(list);
     }
   }
   else if (type == "lambda") // Complete
@@ -439,7 +456,7 @@ void rules(string type)
         in_built_functions(func, func_args);
       }
     }
-    else if (stack_stk.top()->type == "list")
+    else if (stack_stk.top()->type == "tuple")
     {
       control_stk.pop();
       Base *list = stack_stk.top();
@@ -544,7 +561,7 @@ void rules(string type)
   }
   else if (type == "tau")
   {
-    Base *list = new Base("list");
+    Base *list = new Base("tuple");
     for (int i = 0; i < control_stk.top()->arg_int; i++)
     {
       list->children.push_back(stack_stk.top());
@@ -580,6 +597,16 @@ void rules(string type)
       cout << "Expect a boolean" << endl;
       throw "Error";
     }
+  }
+  else if (type == "tuple")
+  {
+    stack_stk.push(control_stk.top());
+    control_stk.pop();
+  }
+  else if (type == "string")
+  {
+    stack_stk.push(control_stk.top());
+    control_stk.pop();
   }
   else // Fill for other rules
   {

@@ -50,10 +50,11 @@ int main()
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
   // input = "(fn x. fn w . x + w) 5 6";
   // input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
-  input = "(fn (x,y). Print(x+y))(5,6)";
-  input = "let rec f n = n eq 1 -> 1 | n*f(n-1) in Print(f 4)";
+  input = "Print(Stern ''hello'')";
+  // input = "let rec f n = n eq 1 -> 1 | n*f(n-1) in Print(f 4)";
   // input = "(fn x. Print(x)) 5 ";
   // input = "Print(hundred*2)";
+  // input = "Print((2,3,''4''))";
 
   try
   { //! Lex
