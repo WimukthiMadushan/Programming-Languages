@@ -16,7 +16,7 @@ void rules(string);
 void cse()
 {
   cout << "Hello, I'm CSE!" << endl;
-  control_structures.push_back(vector<Base *>());
+  control_structures.push_back(vector<Base *>()); // Create a blank array for the main function.
   pre_order_traversal(ast_bu.top(), 0);
   evaluate();
 }
@@ -34,12 +34,11 @@ void pre_order_traversal(Node *root, int environment)
       string sliced = root->children[0]->token.substr(4, root->children[0]->token.length() - 5);
       lambda->arg_str1 = sliced;
     }
-    else
+    else // Complete this for a list
     {
       for (int i = 0; i < root->children[0]->children.size(); i++)
       {
-        string sliced = root->children[0]->children[i]->token.substr(4, root->children[0]->children[i]->token.length() - 5);
-        lambda->arg_str2.push_back(sliced);
+        lambda->children.push_back(new Base("identifier", root->children[0]->children[i]->token));
       }
     }
     control_structures[environment].push_back(lambda);
@@ -111,6 +110,10 @@ void add_token_to_control(Node *root, int environment)
   else if (root->token == "delta")
   {
   }
+  else if (root->token == "tau")
+  {
+    control_structures[environment].push_back(new Base("tau", root->children.size()));
+  }
   else if (root->token == "gamma") // Complete
   {
     control_structures[environment].push_back(new Base("gamma"));
@@ -139,13 +142,12 @@ void add_env_to_control(Base *prev, int number) // This adds a saved function to
 
 void evaluate()
 {
-  // Setting up the parsing environment
+  // Initialising a parsing environment
   parsing_env.push(new Base("environment"));
-  // Creating a dummy environment for the base.
   parsing_env.top()->prev = nullptr;
   add_env_to_control(parsing_env.top(), 0);
 
-  // iterating through the control stack and evaluating
+  // Iterating through the control stack and evaluating
   while (control_stk.size() > 1)
   // for (int i = 0; i < 9; i++)
   {
@@ -391,19 +393,10 @@ void rules(string type)
       else
       {
         // cout << "id value is " << temp->arg_str1 << endl;
-        parsing_env.top()->arg_int2.push_back(temp_args->arg_int1);
-        parsing_env.top()->arg_str2.push_back(temp->arg_str1);
+        parsing_env.top()->children.push_back(new Base("identifier", temp->arg_str1, temp_args->arg_int1));
+        // parsing_env.top()->arg_int2.push_back(temp_args->arg_int1);
+        // parsing_env.top()->arg_str2.push_back(temp->arg_str1);
       }
-      // if (temp_args->arg_int2.size() != temp->arg_str2)
-      // {
-      //   cout << "Insufficient arguments";
-      //   throw "Error";
-      // }
-      // for (int i = 0; i < temp->arg_str2.size(); i++)
-      // {
-      //   parsing_env.top()->arg_int2.push_back(temp->arg_int2[i]);
-      //   parsing_env.top()->arg_str2.push_back(temp->arg_str2[i]);
-      // }
     }
   }
   else if (type == "environment")
@@ -431,12 +424,12 @@ void rules(string type)
     bool found = false;
     while (true)
     {
-      for (int i = 0; i < env->arg_str2.size(); i++)
+      for (int i = 0; i < env->children.size(); i++)
       {
-        if (env->arg_str2[i] == control_stk.top()->arg_str1)
+        if (env->children[i]->arg_str1 == control_stk.top()->arg_str1)
         {
           found = true;
-          value->arg_int1 = env->arg_int2[i];
+          value->arg_int1 = env->children[i]->arg_int1;
           break;
         }
       }

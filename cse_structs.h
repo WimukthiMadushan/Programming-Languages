@@ -21,16 +21,15 @@ public:
   string type = "none";
 
   string arg_str1 = "";
-  vector<string> arg_str2 = {};
-
-  int arg_int1 = -1;
-  vector<int> arg_int2 = {};
+  int arg_int1;
 
   Base *prev = nullptr;
+  vector<Base *> children = {};
 
   Base(string type) : type(type){};
   Base(string type, int arg_int1) : type(type), arg_int1(arg_int1){};    // Eg: integer
   Base(string type, string arg_str1) : type(type), arg_str1(arg_str1){}; // Eg: identifier
+  Base(string type, string arg_str1, int arg_int1) : type(type), arg_str1(arg_str1), arg_int1(arg_int1){};
 };
 
 stack<Base *> control_stk; // Working control stack

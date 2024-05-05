@@ -47,8 +47,9 @@ int main()
   // input = "let x = 3 in x + 1";
   // input = "3 ge 6 -> 1 | (4*2)";
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
-  input = "(fn x. fn w . x + w) 5 6";
-  input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
+  // input = "(fn x. fn w . x + w) 5 6";
+  // input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
+  input = "(fn (x,y, z). x+y+z)(5,6, 7)";
 
   try
   { //! Lex
@@ -60,7 +61,7 @@ int main()
     standardizer();
 
     printAST();
-    cse();
+    // cse();
   }
   catch (...)
   {
