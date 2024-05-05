@@ -30,6 +30,8 @@ void cse()
   // Initialising a parsing environment
   parsing_env.push(new Base("environment"));
   parsing_env.top()->prev = nullptr;
+  // Adding in built identifiers
+  add_in_built_to_env(parsing_env.top());
   add_func_to_control(parsing_env.top(), 0);
 
   // Evaluating the control stack
@@ -40,9 +42,9 @@ void cse()
     string the_type = control_stk.top()->type;
     rules(the_type);
     // cout << i << endl;
-    cout << "PE " << parsing_env.size() << endl;
-    cout << control_stk.top()->type << endl;
-    cout << stack_stk.top()->type << endl;
+    // cout << "PE " << parsing_env.size() << endl;
+    // cout << control_stk.top()->type << endl;
+    // cout << stack_stk.top()->type << endl;
   }
   //! these are completly working
   Base *temp = stack_stk.top();
@@ -54,9 +56,9 @@ void cse()
   }
   else
   {
-    cout << temp->type << endl;
-    cout << temp->arg_int << endl;
-    cout << temp->arg_str << endl;
+    // cout << temp->type << endl;
+    // cout << temp->arg_int << endl;
+    // cout << temp->arg_str << endl;
   }
 }
 
@@ -401,33 +403,40 @@ void rules(string type)
       Base *func_args = stack_stk.top();
       stack_stk.pop();
 
-      add_func_to_control(func->prev, func->arg_int);
-
-      cout << "children size : " << func->children.size() << endl;
-
-      if (func->children.size() > 1) // Argument dissassembles the list
+      if (func->arg_int >= 0)
       {
-        if (func_args->children.size() != func->children.size())
+        add_func_to_control(func->prev, func->arg_int);
+
+        // cout << "children size : " << func->children.size() << endl;
+
+        if (func->children.size() > 1) // Argument dissassembles the list
         {
-          cout << "Insufficient arguments" << endl;
-          throw "Error";
-        }
-        else
-        {
-          for (int i = 0; i < func_args->children.size(); i++)
+          if (func_args->children.size() != func->children.size())
           {
-            Base *temp = new Base("identifier", func->children[i]->arg_str);
-            temp->prev = func_args->children[i];
-            parsing_env.top()->children.push_back(temp);
+            cout << "Insufficient arguments" << endl;
+            throw "Error";
+          }
+          else
+          {
+            for (int i = 0; i < func_args->children.size(); i++)
+            {
+              Base *temp = new Base("identifier", func->children[i]->arg_str);
+              temp->prev = func_args->children[i];
+              parsing_env.top()->children.push_back(temp);
+            }
           }
         }
+        // else there is only one argument
+        else
+        {
+          // cout << "type : " << func_args->type << endl;
+          // cout << "value : " << func_args->arg_int << endl;
+          parsing_env.top()->children.push_back(new Base("identifier", func->children[0]->arg_str, func_args));
+        }
       }
-      // else there is only one argument
       else
       {
-        cout << "type : " << func_args->type << endl;
-        cout << "value : " << func_args->arg_int << endl;
-        parsing_env.top()->children.push_back(new Base("identifier", func->children[0]->arg_str, func_args));
+        in_built_functions(func, func_args);
       }
     }
     else if (stack_stk.top()->type == "list")

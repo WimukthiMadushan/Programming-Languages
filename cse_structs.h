@@ -48,3 +48,19 @@ stack<Base *> stack_stk;   // Working stack stack
 stack<Base *> parsing_env; // Stored environments
 
 vector<vector<Base *>> control_structures; // Stores each function present in the syntax tree
+
+// In built functions
+void add_in_built_to_env(Base *env)
+{
+  env->children.push_back(new Base("identifier", "hundred", new Base("integer", 100)));
+  env->children.push_back(new Base("identifier", "Print", new Base("lambda", -1)));
+}
+
+void in_built_functions(Base *func, Base *func_args)
+{
+  if (func->arg_int == -1)
+  {
+    cout << func_args->arg_int << endl;
+    stack_stk.push(new Base("dummy"));
+  }
+}
