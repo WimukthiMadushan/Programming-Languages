@@ -48,9 +48,10 @@ int main()
   // input = "3 ge 6 -> 1 | (4*2)";
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
   // input = "(fn x. fn w . x + w) 5 6";
-  // input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
+  input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
   // input = "(fn (x,y). x+y)(5,6)";
-  input = "let rec f n = n eq 1 -> 1 | n*f(n-1) in f 3";
+  // input = "let rec f n = n eq 1 -> 1 | n*f(n-1) in f 4";
+  // input = "(fn x. Print(x)) 5 ";
 
   try
   { //! Lex

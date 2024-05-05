@@ -7,157 +7,40 @@
 
 int env_count = 0;
 
-void pre_order_traversal(Node *root, int environment);  // Traverse  through the tree.
-void add_env_to_control(Base *prev, int number);        // Add a funciton to the control stack.
-void add_token_to_control(Node *root, int environment); // Add a nodes to control structures.
-void evaluate();                                        // Evaluate the control stack.
-void rules(string);
+// Creating the control stack
+void pre_order_traversal(Node *root, int environment); // Traverse  through the tree.
+void add_func_to_control(Base *prev, int number);      // Add a funciton to the control stack.
 
+// Evaluate the control stack
+void rules(string); // Rules regarding the control stack
+
+// Here we maintain several structures to keep track of the process
+//? control_stk - Works as the control in the CSE process.
+//? stack_stk - Works as the stack in the CSE process.
+//? parsing_env - Stores the current environment in the CSE process as a stack of pointers.
+//? control_structures - Keep all the functions in memory as an array.
+
+// CSE function handles all other functions
 void cse()
 {
-  cout << "Hello, I'm CSE!" << endl;
-  control_structures.push_back(vector<Base *>()); // Create a blank array for the main function.
+  // Create a blank array for the main function.
+  control_structures.push_back(vector<Base *>());
   pre_order_traversal(ast_bu.top(), 0);
-  evaluate();
-}
 
-void pre_order_traversal(Node *root, int environment)
-// Traverse through the tree and create arrays of control structures
-{
-  if (root->token == "lambda")
-  {
-    Base *lambda = new Base("lambda", ++env_count);
-    control_structures.push_back(vector<Base *>());
-    pre_order_traversal(root->children[1], env_count);
-    if (root->children[0]->token != ",")
-    {
-      string sliced = root->children[0]->token.substr(4, root->children[0]->token.length() - 5);
-      lambda->arg_str1 = sliced;
-    }
-    else // Complete this for a list
-    {
-      // cout << "a" << endl;
-      for (int i = 0; i < root->children[0]->children.size(); i++)
-      {
-        // cout << "b" << endl;
-        string sliced = root->children[0]->children[i]->token.substr(4, root->children[0]->children[i]->token.length() - 5);
-        lambda->children.push_back(new Base("identifier", sliced));
-      }
-    }
-    control_structures[environment].push_back(lambda);
-  }
-  else if (root->token == "->") // Complete
-  {
-    control_structures[environment].push_back(new Base("delta", ++env_count));
-    control_structures.push_back(vector<Base *>());
-    pre_order_traversal(root->children[1], env_count);
-
-    control_structures[environment].push_back(new Base("delta", ++env_count));
-    control_structures.push_back(vector<Base *>());
-    pre_order_traversal(root->children[2], env_count);
-
-    control_structures[environment].push_back(new Base("beta"));
-
-    pre_order_traversal(root->children[0], environment);
-  }
-  else // Complete
-  {
-    add_token_to_control(root, environment);
-    for (int i = 0; i < root->children.size(); i++)
-    {
-      pre_order_traversal(root->children[i], environment);
-    }
-  }
-}
-
-void add_token_to_control(Node *root, int environment)
-{
-  cout << root->token << " " << environment << endl;
-  if (root->token[0] == '<') // Complete
-  {
-    if (root->token[1] == 'I')
-    {
-      if (root->token[2] == 'N')
-      {
-        // this is a number
-        int num = stoi(root->token.substr(5, root->token.length() - 6));
-        control_structures[environment].push_back(new Base("integer", num));
-      }
-      else
-      {
-        // this is an id
-        string sliced = root->token.substr(4, root->token.length() - 5);
-        control_structures[environment].push_back(new Base("identifier", sliced));
-      }
-    }
-    else
-    {
-      // This is a string
-      string sliced = root->token.substr(5, root->token.length() - 6);
-      control_structures[environment].push_back(new Base("string", sliced));
-    }
-  }
-  else if (isBOp(root->token) || isUOp(root->token)) // Complete
-  {
-    control_structures[environment].push_back(new Base("operator", root->token));
-  }
-  else if (root->token == "true" || root->token == "false") // Complete
-  {
-    control_structures[environment].push_back(new Base("bool", root->token));
-  }
-  else if (root->token == "lambda")
-  {
-    cout << "Error. lambda is not supported here" << endl;
-    throw "Error. lambda is not supported here";
-  }
-  else if (root->token == "Ystar")
-  {
-    control_structures[environment].push_back(new Base("ystar"));
-  }
-  else if (root->token == "tau")
-  {
-    control_structures[environment].push_back(new Base("tau", root->children.size()));
-  }
-  else if (root->token == "gamma") // Complete
-  {
-    control_structures[environment].push_back(new Base("gamma"));
-  }
-  else if (root->token == "->") // Complete
-  {
-    cout << "Error. -> is not supported here" << endl;
-    throw "Error. -> is not supported here";
-  }
-}
-
-void add_env_to_control(Base *prev, int number) // This adds a saved function to the control stack
-{
-  Base *temp_env = new Base("environment");
-  control_stk.push(temp_env);
-  stack_stk.push(temp_env);
-  temp_env->prev = prev;
-  parsing_env.push(temp_env);
-
-  // Adding the saved function to the control stack
-  for (int i = 0; i < control_structures[number].size(); i++)
-  {
-    control_stk.push(control_structures[number][i]);
-  }
-}
-
-void evaluate()
-{
   // Initialising a parsing environment
   parsing_env.push(new Base("environment"));
   parsing_env.top()->prev = nullptr;
-  add_env_to_control(parsing_env.top(), 0);
+  add_func_to_control(parsing_env.top(), 0);
 
+  // Evaluating the control stack
   // Iterating through the control stack and evaluating
   while (control_stk.size() > 1)
-  // for (int i = 0; i < 52; i++)
+  // for (int i = 0; i < 7; i++)
   {
     string the_type = control_stk.top()->type;
     rules(the_type);
     // cout << i << endl;
+    cout << "PE " << parsing_env.size() << endl;
     cout << control_stk.top()->type << endl;
     cout << stack_stk.top()->type << endl;
   }
@@ -172,8 +55,118 @@ void evaluate()
   else
   {
     cout << temp->type << endl;
-    cout << temp->arg_int1 << endl;
-    cout << temp->arg_str1 << endl;
+    cout << temp->arg_int << endl;
+    cout << temp->arg_str << endl;
+  }
+}
+
+void pre_order_traversal(Node *root, int environment)
+// Traverse through the tree and create arrays of control structures
+{
+  if (root->token == "lambda")
+  {
+    Base *lambda = new Base("lambda", ++env_count);
+    control_structures.push_back(vector<Base *>());
+
+    // Create the function in a seperate arrays.
+    pre_order_traversal(root->children[1], env_count);
+
+    // Arguments : can be a single identifier or a list of identifiers
+    if (root->children[0]->token != ",")
+    {
+      string sliced = root->children[0]->token.substr(4, root->children[0]->token.length() - 5);
+      lambda->children.push_back(new Base("identifier", sliced));
+    }
+    else
+    {
+      for (int i = 0; i < root->children[0]->children.size(); i++)
+      {
+        string sliced = root->children[0]->children[i]->token.substr(4, root->children[0]->children[i]->token.length() - 5);
+        lambda->children.push_back(new Base("identifier", sliced));
+      }
+    }
+    control_structures[environment].push_back(lambda);
+  }
+  else if (root->token == "->")
+  {
+    control_structures[environment].push_back(new Base("delta", ++env_count));
+    control_structures.push_back(vector<Base *>());
+    pre_order_traversal(root->children[1], env_count);
+
+    control_structures[environment].push_back(new Base("delta", ++env_count));
+    control_structures.push_back(vector<Base *>());
+    pre_order_traversal(root->children[2], env_count);
+
+    control_structures[environment].push_back(new Base("beta"));
+
+    pre_order_traversal(root->children[0], environment);
+  }
+  else
+  {
+    if (root->token[0] == '<') // Complete
+    {
+      if (root->token[1] == 'I')
+      {
+        if (root->token[2] == 'N')
+        {
+          // this is a number
+          int num = stoi(root->token.substr(5, root->token.length() - 6));
+          control_structures[environment].push_back(new Base("integer", num));
+        }
+        else
+        {
+          // this is an id
+          string sliced = root->token.substr(4, root->token.length() - 5);
+          control_structures[environment].push_back(new Base("identifier", sliced));
+        }
+      }
+      else
+      {
+        // This is a string
+        string sliced = root->token.substr(5, root->token.length() - 6);
+        control_structures[environment].push_back(new Base("string", sliced));
+      }
+    }
+    else if (isBOp(root->token) || isUOp(root->token)) // Complete
+    {
+      control_structures[environment].push_back(new Base("operator", root->token));
+    }
+    else if (root->token == "true" || root->token == "false") // Complete
+    {
+      control_structures[environment].push_back(new Base("boolean", root->token));
+    }
+    else if (root->token == "Ystar")
+    {
+      control_structures[environment].push_back(new Base("ystar"));
+    }
+    else if (root->token == "tau")
+    {
+      control_structures[environment].push_back(new Base("tau", root->children.size()));
+    }
+    else if (root->token == "gamma") // Complete
+    {
+      control_structures[environment].push_back(new Base("gamma"));
+    }
+
+    // Iterating through the children
+    for (int i = 0; i < root->children.size(); i++)
+    {
+      pre_order_traversal(root->children[i], environment);
+    }
+  }
+}
+
+void add_func_to_control(Base *prev, int number) // This adds a saved function to the control stack
+{
+  Base *temp_env = new Base("environment", prev);
+  control_stk.push(temp_env);
+  stack_stk.push(temp_env);
+  parsing_env.push(temp_env);
+
+  // Adding the saved function to the control stack
+  for (int i = 0; i < control_structures[number].size(); i++)
+  {
+    control_stk.push(control_structures[number][i]);
   }
 }
 
@@ -184,30 +177,70 @@ void rules(string type)
     stack_stk.push(control_stk.top());
     control_stk.pop();
   }
-  else if (type == "bool") // Complete
+  else if (type == "boolean") // Complete
   {
     stack_stk.push(control_stk.top());
     control_stk.pop();
   }
   else if (type == "operator") // Complete
   {
-    string op = control_stk.top()->arg_str1;
+    string op = control_stk.top()->arg_str;
     control_stk.pop();
-    if (op == "+" || op == "-" || op == "*" || op == "/" || op == "**" || op == "gr" || op == "ge" || op == "ls" || op == "le" || op == "ne" || op == "eq")
+    if (op == "ne" || op == "eq")
+    {
+      if (stack_stk.top()->type != "integer" && stack_stk.top()->type != "boolean")
+      {
+        cout << "Expect an integer or boolean with " << op << endl;
+        throw "Error";
+      };
+      int a = stack_stk.top()->arg_int;
+      stack_stk.pop();
+      if (stack_stk.top()->type != "integer" && stack_stk.top()->type != "boolean")
+      {
+        cout << "Expect an integer or boolean with " << op << endl;
+        throw "Error";
+      };
+      int b = stack_stk.top()->arg_int;
+      stack_stk.pop();
+      if (op == "eq")
+      {
+        if (a == b)
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+        else
+        {
+          stack_stk.push(new Base("boolean", "false"));
+        }
+      }
+      else
+      //(op == "ne")
+      {
+        if (a != b)
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+        else
+        {
+          stack_stk.push(new Base("boolean", "false"));
+        }
+      }
+    }
+    else if (op == "+" || op == "-" || op == "*" || op == "/" || op == "**" || op == "gr" || op == "ge" || op == "ls" || op == "le")
     {
       if (stack_stk.top()->type != "integer")
       {
         cout << "Expect an integer with " << op << endl;
         throw "Error";
       };
-      int a = stack_stk.top()->arg_int1;
+      int a = stack_stk.top()->arg_int;
       stack_stk.pop();
       if (stack_stk.top()->type != "integer")
       {
         cout << "Expect an integer with " << op << endl;
         throw "Error";
       };
-      int b = stack_stk.top()->arg_int1;
+      int b = stack_stk.top()->arg_int;
       stack_stk.pop();
 
       if (op == "+")
@@ -234,66 +267,44 @@ void rules(string type)
       {
         if (a > b)
         {
-          stack_stk.push(new Base("bool", "true"));
+          stack_stk.push(new Base("boolean", "true"));
         }
         else
         {
-          stack_stk.push(new Base("bool", "false"));
+          stack_stk.push(new Base("boolean", "false"));
         }
       }
       else if (op == "ge")
       {
         if (a >= b)
         {
-          stack_stk.push(new Base("bool", "true"));
+          stack_stk.push(new Base("boolean", "true"));
         }
         else
         {
-          stack_stk.push(new Base("bool", "false"));
+          stack_stk.push(new Base("boolean", "false"));
         }
       }
       else if (op == "ls")
       {
         if (a < b)
         {
-          stack_stk.push(new Base("bool", "true"));
+          stack_stk.push(new Base("boolean", "true"));
         }
         else
         {
-          stack_stk.push(new Base("bool", "false"));
+          stack_stk.push(new Base("boolean", "false"));
         }
       }
-      else if (op == "ge")
+      else // op == "le"
       {
         if (a <= b)
         {
-          stack_stk.push(new Base("bool", "true"));
+          stack_stk.push(new Base("boolean", "true"));
         }
         else
         {
-          stack_stk.push(new Base("bool", "false"));
-        }
-      }
-      else if (op == "eq")
-      {
-        if (a == b)
-        {
-          stack_stk.push(new Base("bool", "true"));
-        }
-        else
-        {
-          stack_stk.push(new Base("bool", "false"));
-        }
-      }
-      else if (op == "ne")
-      {
-        if (a != b)
-        {
-          stack_stk.push(new Base("bool", "true"));
-        }
-        else
-        {
-          stack_stk.push(new Base("bool", "false"));
+          stack_stk.push(new Base("boolean", "false"));
         }
       }
     }
@@ -304,75 +315,75 @@ void rules(string type)
         cout << "Expect an integer with " << op << endl;
         throw "Error";
       };
-      int a = stack_stk.top()->arg_int1;
+      int a = stack_stk.top()->arg_int;
       stack_stk.pop();
       stack_stk.push(new Base("integer", -a));
     }
     else if (op == "not")
     {
-      if (stack_stk.top()->type != "bool")
+      if (stack_stk.top()->type != "boolean")
       {
-        cout << "Expect an integer with " << op << endl;
+        cout << "Expect a boolean with " << op << endl;
         throw "Error";
       };
-      string a = stack_stk.top()->arg_str1;
+      string a = stack_stk.top()->arg_str;
       stack_stk.pop();
-      if (a == "True")
+      if (a == "true")
       {
-        stack_stk.push(new Base("bool", "false"));
+        stack_stk.push(new Base("boolean", "false"));
       }
       else
       {
-        stack_stk.push(new Base("bool", "true"));
+        stack_stk.push(new Base("boolean", "true"));
       }
     }
     else if (op == "or" || op == "&")
     {
-      if (stack_stk.top()->type != "bool")
+      if (stack_stk.top()->type != "boolean")
       {
-        cout << "Expect an bool with " << op << endl;
+        cout << "Expect a boolean with " << op << endl;
         throw "Error";
       };
-      string a = stack_stk.top()->arg_str1;
+      string a = stack_stk.top()->arg_str;
       stack_stk.pop();
-      if (stack_stk.top()->type != "bool")
+      if (stack_stk.top()->type != "boolean")
       {
-        cout << "Expect an bool with " << op << endl;
+        cout << "Expect a boolean with " << op << endl;
         throw "Error";
       };
-      string b = stack_stk.top()->arg_str1;
+      string b = stack_stk.top()->arg_str;
       stack_stk.pop();
 
       if (op == "or")
       {
         if (a == "true" || b == "true")
         {
-          stack_stk.push(new Base("bool", "true"));
+          stack_stk.push(new Base("boolean", "true"));
         }
         else
         {
-          stack_stk.push(new Base("bool", "false"));
+          stack_stk.push(new Base("boolean", "false"));
         }
       }
-      else if (op == "&")
+      else // (op == "&")
       {
         if (a == "true" && b == "true")
         {
-          stack_stk.push(new Base("bool", "true"));
+          stack_stk.push(new Base("boolean", "true"));
         }
         else
         {
-          stack_stk.push(new Base("bool", "false"));
+          stack_stk.push(new Base("boolean", "false"));
         }
       }
     }
-    else if (op == "aug")
+    else if (op == "aug") // Complete for other operations if there are any including aug
     {
       cout << "aug is incomplete" << endl;
       throw "Error";
     }
   }
-  else if (type == "lambda") // Assume complete
+  else if (type == "lambda") // Complete
   {
     stack_stk.push(control_stk.top());
     control_stk.pop();
@@ -380,7 +391,8 @@ void rules(string type)
   }
   else if (type == "gamma")
   {
-    if (stack_stk.top()->type == "lambda")
+    if (stack_stk.top()->type == "lambda") //! Look again if needed
+    //! Change this to accept strings and stuff.
     {
       Base *func = stack_stk.top();
       control_stk.pop();
@@ -389,9 +401,11 @@ void rules(string type)
       Base *func_args = stack_stk.top();
       stack_stk.pop();
 
-      add_env_to_control(func->prev, func->arg_int1);
+      add_func_to_control(func->prev, func->arg_int);
 
-      if (func_args->type == "list")
+      cout << "children size : " << func->children.size() << endl;
+
+      if (func->children.size() > 1) // Argument dissassembles the list
       {
         if (func_args->children.size() != func->children.size())
         {
@@ -400,23 +414,20 @@ void rules(string type)
         }
         else
         {
-          // Complete this code.
           for (int i = 0; i < func_args->children.size(); i++)
           {
-            parsing_env.top()->children.push_back(new Base("identifier", func->children[i]->arg_str1, func_args->children[i]->arg_int1));
+            Base *temp = new Base("identifier", func->children[i]->arg_str);
+            temp->prev = func_args->children[i];
+            parsing_env.top()->children.push_back(temp);
           }
         }
       }
-      else if (func_args->type == "eta")
-      {
-        parsing_env.top()->children.push_back(func_args);
-      }
+      // else there is only one argument
       else
       {
-        // cout << "id value is " << func->arg_str1 << endl;
-        parsing_env.top()->children.push_back(new Base("identifier", func->arg_str1, func_args->arg_int1));
-        // parsing_env.top()->arg_int2.push_back(func_args->arg_int1);
-        // parsing_env.top()->arg_str2.push_back(func->arg_str1);
+        cout << "type : " << func_args->type << endl;
+        cout << "value : " << func_args->arg_int << endl;
+        parsing_env.top()->children.push_back(new Base("identifier", func->children[0]->arg_str, func_args));
       }
     }
     else if (stack_stk.top()->type == "list")
@@ -424,34 +435,33 @@ void rules(string type)
       control_stk.pop();
       Base *list = stack_stk.top();
       stack_stk.pop();
-      int index = stack_stk.top()->arg_int1;
+      int index = stack_stk.top()->arg_int;
       stack_stk.pop();
       stack_stk.push(list->children[index]);
     }
-    else if (stack_stk.top()->type == "ystar")
+    else if (stack_stk.top()->type == "ystar") // Think okay if not for pointers
     {
       control_stk.pop();
       stack_stk.pop();
       Base *lambda = stack_stk.top();
       stack_stk.pop();
 
-      // Create a top "eta"
       Base *eta = new Base("eta");
       eta->prev = lambda->prev;
       eta->children = lambda->children;
-      eta->arg_int1 = lambda->arg_int1;
-      eta->arg_str1 = lambda->arg_str1;
+      eta->arg_int = lambda->arg_int;
+      // eta->arg_str = lambda->arg_str;
 
       stack_stk.push(eta);
     }
-    else if (stack_stk.top()->type == "eta")
+    else if (stack_stk.top()->type == "eta") // This okay if not for pointers
     {
       control_stk.push(new Base("gamma"));
       Base *lambda = new Base("lambda");
       lambda->prev = stack_stk.top()->prev;
       lambda->children = stack_stk.top()->children;
-      lambda->arg_int1 = stack_stk.top()->arg_int1;
-      lambda->arg_str1 = stack_stk.top()->arg_str1;
+      lambda->arg_int = stack_stk.top()->arg_int;
+      // lambda->arg_str = stack_stk.top()->arg_str;
       stack_stk.push(lambda);
     }
   }
@@ -468,34 +478,24 @@ void rules(string type)
     }
     else
     {
-      cout << "Error" << endl;
+      cout << "Error with environment Base" << endl;
       throw "Error";
     }
   }
   else if (type == "identifier")
   {
-    // cout << parsing_env.top()->children[1]->arg_str1 << endl;
-    // cout << parsing_env.top()->children[1]->arg_int1 << endl;
-    // cout << "reached here" << endl;
     Base *env = parsing_env.top();
     Base *value;
     bool found = false;
+    // return;
     while (true)
     {
       for (int i = 0; i < env->children.size(); i++)
       {
-        if (env->children[i]->arg_str1 == control_stk.top()->arg_str1)
+        if (env->children[i]->arg_str == control_stk.top()->arg_str)
         {
           found = true;
-          if (env->children[i]->type == "identifier")
-          {
-            value = new Base("integer", env->children[i]->arg_int1);
-          }
-          else if (env->children[i]->type == "eta")
-          {
-            value = env->children[i];
-          }
-
+          value = env->children[i]->prev;
           break;
         }
       }
@@ -514,7 +514,7 @@ void rules(string type)
     }
     if (!found)
     {
-      cout << "Identifier " << control_stk.top()->arg_str1 << " not found" << endl;
+      cout << "Identifier " << control_stk.top()->arg_str << " not found" << endl;
       throw "Error";
     }
     else
@@ -527,15 +527,16 @@ void rules(string type)
   {
     Base *temp = control_stk.top();
     control_stk.pop();
-    for (int i = 0; i < control_structures[temp->arg_int1].size(); i++)
+
+    for (int i = 0; i < control_structures[temp->arg_int].size(); i++)
     {
-      control_stk.push(control_structures[temp->arg_int1][i]);
+      control_stk.push(control_structures[temp->arg_int][i]);
     }
   }
   else if (type == "tau")
   {
     Base *list = new Base("list");
-    for (int i = 0; i < control_stk.top()->arg_int1; i++)
+    for (int i = 0; i < control_stk.top()->arg_int; i++)
     {
       list->children.push_back(stack_stk.top());
       stack_stk.pop();
@@ -550,14 +551,13 @@ void rules(string type)
   }
   else if (type == "beta") // Complete
   {
-    if (stack_stk.top()->arg_str1 == "true")
+    if (stack_stk.top()->arg_str == "true")
     {
-      // cout << "was here" << endl;
       control_stk.pop();
       control_stk.pop();
       stack_stk.pop();
     }
-    else
+    else if (stack_stk.top()->arg_str == "false")
     {
       control_stk.pop();
       Base *temp = control_stk.top();
@@ -566,5 +566,15 @@ void rules(string type)
       control_stk.push(temp);
       stack_stk.pop();
     }
+    else
+    {
+      cout << "Expect a boolean" << endl;
+      throw "Error";
+    }
+  }
+  else // Fill for other rules
+  {
+    cout << "Error with Base" << endl;
+    throw "Error";
   }
 }
