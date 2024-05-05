@@ -49,7 +49,8 @@ int main()
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
   // input = "(fn x. fn w . x + w) 5 6";
   // input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
-  input = "(fn (x,y, z). x+y+z)(5,6, 7)";
+  // input = "(fn (x,y). x+y)(5,6)";
+  input = "let rec f n = n eq 1 -> 1 | n*f(n-1) in f 3";
 
   try
   { //! Lex
@@ -61,7 +62,7 @@ int main()
     standardizer();
 
     printAST();
-    // cse();
+    cse();
   }
   catch (...)
   {

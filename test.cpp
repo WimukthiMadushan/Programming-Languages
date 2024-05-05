@@ -1,38 +1,60 @@
 #include <iostream>
 
-struct NodeB; // Forward declaration of NodeB
-
-struct NodeA
+class MyClass
 {
+public:
   int data;
-  NodeB *nextB; // Pointer to NodeB
 
-  // Constructor
-  NodeA(int d) : data(d), nextB(nullptr) {}
-};
+  // Default constructor
+  MyClass()
+  {
+    data = 0;
+  }
 
-struct NodeB
-{
-  float value;
-  NodeA *prevA; // Pointer to NodeA
+  // Parameterized constructor
+  MyClass(int val)
+  {
+    data = val;
+  }
 
-  // Constructor
-  NodeB(float v) : value(v), prevA(nullptr) {}
+  // Copy Constructor
+  MyClass(const MyClass &other)
+  {
+    data = other.data;
+  }
+
+  // Assignment Operator Overload
+  MyClass &operator=(const MyClass &other)
+  {
+    if (this != &other)
+    {
+      data = other.data;
+    }
+    return *this;
+  }
 };
 
 int main()
 {
-  // Creating nodes
-  NodeA a(10);
-  NodeB b(3.14);
+  // Creating an object and initializing its data member
+  MyClass obj1(10);
 
-  // Establishing connections
-  a.nextB = &b;
-  b.prevA = &a;
+  // Creating a copy using the copy constructor
+  MyClass obj2 = obj1;
 
-  // Accessing data
-  std::cout << "Node A data: " << a.data << std::endl;
-  std::cout << "Node B value: " << b.value << std::endl;
+  // Creating another object
+  MyClass obj3;
+
+  // Creating a copy using the assignment operator
+  obj3 = obj1;
+
+  // Altering an attribute of the copy
+  obj2.data = 20;
+
+  // Displaying data of all objects
+  std::cout << "Data of obj1: " << obj1.data << std::endl;
+  std::cout << "Data of obj2: " << obj2.data << std::endl;
+  std::cout << "Data of obj3: " << obj3.data << std::endl;
 
   return 0;
 }

@@ -12,7 +12,8 @@
 //! environment: arg_int1 = environment_value
 //! beta: none
 //! tau: arg_int1 = size
-//! neta: 2 int and one string
+//! eta: 2 int and one string
+//! ystar: 0
 // bool: arg_str1 = "True" or "False"
 
 class Base // Each node in the control stack and the stack stack

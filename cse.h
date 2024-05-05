@@ -36,9 +36,12 @@ void pre_order_traversal(Node *root, int environment)
     }
     else // Complete this for a list
     {
+      // cout << "a" << endl;
       for (int i = 0; i < root->children[0]->children.size(); i++)
       {
-        lambda->children.push_back(new Base("identifier", root->children[0]->children[i]->token));
+        // cout << "b" << endl;
+        string sliced = root->children[0]->children[i]->token.substr(4, root->children[0]->children[i]->token.length() - 5);
+        lambda->children.push_back(new Base("identifier", sliced));
       }
     }
     control_structures[environment].push_back(lambda);
@@ -107,8 +110,9 @@ void add_token_to_control(Node *root, int environment)
     cout << "Error. lambda is not supported here" << endl;
     throw "Error. lambda is not supported here";
   }
-  else if (root->token == "delta")
+  else if (root->token == "Ystar")
   {
+    control_structures[environment].push_back(new Base("ystar"));
   }
   else if (root->token == "tau")
   {
@@ -149,11 +153,11 @@ void evaluate()
 
   // Iterating through the control stack and evaluating
   while (control_stk.size() > 1)
-  // for (int i = 0; i < 9; i++)
+  // for (int i = 0; i < 52; i++)
   {
     string the_type = control_stk.top()->type;
     rules(the_type);
-
+    // cout << i << endl;
     cout << control_stk.top()->type << endl;
     cout << stack_stk.top()->type << endl;
   }
@@ -378,25 +382,77 @@ void rules(string type)
   {
     if (stack_stk.top()->type == "lambda")
     {
-      Base *temp = stack_stk.top();
+      Base *func = stack_stk.top();
       control_stk.pop();
       stack_stk.pop();
-      Base *temp_args = stack_stk.top();
+
+      Base *func_args = stack_stk.top();
       stack_stk.pop();
 
-      add_env_to_control(temp->prev, temp->arg_int1);
+      add_env_to_control(func->prev, func->arg_int1);
 
-      if (temp_args->type == "list")
+      if (func_args->type == "list")
       {
-        // fill this later.
+        if (func_args->children.size() != func->children.size())
+        {
+          cout << "Insufficient arguments" << endl;
+          throw "Error";
+        }
+        else
+        {
+          // Complete this code.
+          for (int i = 0; i < func_args->children.size(); i++)
+          {
+            parsing_env.top()->children.push_back(new Base("identifier", func->children[i]->arg_str1, func_args->children[i]->arg_int1));
+          }
+        }
+      }
+      else if (func_args->type == "eta")
+      {
+        parsing_env.top()->children.push_back(func_args);
       }
       else
       {
-        // cout << "id value is " << temp->arg_str1 << endl;
-        parsing_env.top()->children.push_back(new Base("identifier", temp->arg_str1, temp_args->arg_int1));
-        // parsing_env.top()->arg_int2.push_back(temp_args->arg_int1);
-        // parsing_env.top()->arg_str2.push_back(temp->arg_str1);
+        // cout << "id value is " << func->arg_str1 << endl;
+        parsing_env.top()->children.push_back(new Base("identifier", func->arg_str1, func_args->arg_int1));
+        // parsing_env.top()->arg_int2.push_back(func_args->arg_int1);
+        // parsing_env.top()->arg_str2.push_back(func->arg_str1);
       }
+    }
+    else if (stack_stk.top()->type == "list")
+    {
+      control_stk.pop();
+      Base *list = stack_stk.top();
+      stack_stk.pop();
+      int index = stack_stk.top()->arg_int1;
+      stack_stk.pop();
+      stack_stk.push(list->children[index]);
+    }
+    else if (stack_stk.top()->type == "ystar")
+    {
+      control_stk.pop();
+      stack_stk.pop();
+      Base *lambda = stack_stk.top();
+      stack_stk.pop();
+
+      // Create a top "eta"
+      Base *eta = new Base("eta");
+      eta->prev = lambda->prev;
+      eta->children = lambda->children;
+      eta->arg_int1 = lambda->arg_int1;
+      eta->arg_str1 = lambda->arg_str1;
+
+      stack_stk.push(eta);
+    }
+    else if (stack_stk.top()->type == "eta")
+    {
+      control_stk.push(new Base("gamma"));
+      Base *lambda = new Base("lambda");
+      lambda->prev = stack_stk.top()->prev;
+      lambda->children = stack_stk.top()->children;
+      lambda->arg_int1 = stack_stk.top()->arg_int1;
+      lambda->arg_str1 = stack_stk.top()->arg_str1;
+      stack_stk.push(lambda);
     }
   }
   else if (type == "environment")
@@ -418,9 +474,11 @@ void rules(string type)
   }
   else if (type == "identifier")
   {
-    cout << "reached here" << endl;
+    // cout << parsing_env.top()->children[1]->arg_str1 << endl;
+    // cout << parsing_env.top()->children[1]->arg_int1 << endl;
+    // cout << "reached here" << endl;
     Base *env = parsing_env.top();
-    Base *value = new Base("integer");
+    Base *value;
     bool found = false;
     while (true)
     {
@@ -429,7 +487,15 @@ void rules(string type)
         if (env->children[i]->arg_str1 == control_stk.top()->arg_str1)
         {
           found = true;
-          value->arg_int1 = env->children[i]->arg_int1;
+          if (env->children[i]->type == "identifier")
+          {
+            value = new Base("integer", env->children[i]->arg_int1);
+          }
+          else if (env->children[i]->type == "eta")
+          {
+            value = env->children[i];
+          }
+
           break;
         }
       }
@@ -465,6 +531,22 @@ void rules(string type)
     {
       control_stk.push(control_structures[temp->arg_int1][i]);
     }
+  }
+  else if (type == "tau")
+  {
+    Base *list = new Base("list");
+    for (int i = 0; i < control_stk.top()->arg_int1; i++)
+    {
+      list->children.push_back(stack_stk.top());
+      stack_stk.pop();
+    }
+    stack_stk.push(list);
+    control_stk.pop();
+  }
+  else if (type == "ystar")
+  {
+    stack_stk.push(control_stk.top());
+    control_stk.pop();
   }
   else if (type == "beta") // Complete
   {
