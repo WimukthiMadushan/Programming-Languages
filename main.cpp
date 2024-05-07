@@ -37,13 +37,15 @@ int main()
 {
   string input;
   string input_file = "input.txt";
+
+  // TODO: try saving different text files in the test.txt file. Comment the below line to read the "input.txt".
   input_file = "test.txt";
+
   input = readFileToString(input_file);
 
   // TODO: Try different strings here. Comment all below to read the input_file.
   // input = "let f x y z = x + y + z in f 1 2 3";
   // input = "let x  = 3 and y = 4 in x + y";
-
   // input = "Print((fn x . x + 1 )4 * 6)";
   // input = "(fn x. Print(x))pi";
   // input = "let x = 3 in x + 1";

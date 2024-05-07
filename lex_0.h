@@ -85,9 +85,10 @@ void scanner(string input)
         }
       }
     }
-    else if (c == '\'')
+    else if ((c == '\'') && (input[index] == '\''))
     {
-      buffer += c;
+      index++;
+      buffer = "\'\'";
       while (true)
       {
         c = input[index++];
@@ -115,9 +116,10 @@ void scanner(string input)
         {
           buffer += c;
         }
-        else if (c == '\'')
+        else if ((c == '\'') && (input[index] == '\''))
         {
-          buffer += c;
+          buffer += "\'\'";
+          index++;
           // TODO: Add bufffer to something
           tokens.push_back(Token("string", buffer));
           // cout << "String : " << buffer << endl;

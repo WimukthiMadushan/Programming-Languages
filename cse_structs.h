@@ -70,6 +70,7 @@ void add_in_built_to_env(Base *env)
   env->children.push_back(new Base("identifier", "Conc", new Base("lambda", -9)));
   env->children.push_back(new Base("identifier", "Order", new Base("lambda", -10)));
   env->children.push_back(new Base("identifier", "Null", new Base("lambda", -11)));
+  env->children.push_back(new Base("identifier", "ItoS", new Base("lambda", -12)));
 }
 
 void print_Base(Base *env)
@@ -98,7 +99,41 @@ void print_Base(Base *env)
   }
   else if (env->type == "string")
   {
-    cout << "\"" << env->arg_str << "\"";
+    for (int i = 0; i < env->arg_str.size(); i++)
+    {
+      if (env->arg_str[i] == '\\')
+      {
+        i++;
+        if (i < env->arg_str.size())
+        {
+          if (env->arg_str[i] == 'n')
+          {
+            cout << "\n";
+          }
+          else if (env->arg_str[i] == 't')
+          {
+            cout << "\t";
+          }
+          else if (env->arg_str[i] == 'b')
+          {
+            cout << "\b";
+          }
+          else
+          {
+            string sub = env->arg_str.substr(i - 1, 2);
+            cout << sub;
+          }
+        }
+        else
+        {
+          cout << "\\";
+        }
+      }
+      else
+      {
+        cout << env->arg_str[i];
+      }
+    }
   }
 }
 
@@ -231,5 +266,14 @@ void in_built_functions(Base *func, Base *func_args)
     {
       stack_stk.push(new Base("boolean", "false"));
     }
+  }
+  else if (val == -12)
+  {
+    if (func_args->type != "integer")
+    {
+      cout << "Expect an integer with ItoS" << endl;
+      throw "Error";
+    }
+    stack_stk.push(new Base("string", to_string(func_args->arg_int)));
   }
 }

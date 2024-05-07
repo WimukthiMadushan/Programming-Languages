@@ -124,7 +124,7 @@ void pre_order_traversal(Node *root, int environment)
       else
       {
         // This is a string
-        string sliced = root->token.substr(6, root->token.length() - 8);
+        string sliced = root->token.substr(7, root->token.length() - 10);
         control_structures[environment].push_back(new Base("string", sliced));
       }
     }

@@ -385,7 +385,7 @@ void At()
 {
   Af();
   dt_bu.push_back("At -> Af");
-  while (NextToken("operator", "*") || NextToken("identifier", "/"))
+  while (NextToken("operator", "*") || NextToken("operator", "/"))
   {
     if (NextToken("operator", "*"))
     {
