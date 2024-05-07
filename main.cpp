@@ -37,6 +37,7 @@ int main()
 {
   string input;
   string input_file = "input.txt";
+  input_file = "test.txt";
   input = readFileToString(input_file);
 
   // TODO: Try different strings here. Comment all below to read the input_file.
@@ -50,16 +51,21 @@ int main()
   // input = "(fn n . n ls 0 -> -n | n)(-3)";
   // input = "(fn x. fn w . x + w) 5 6";
   // input = "(fn x .(1 + (fn w . -w)x))((fn z. 2 * z )7)";
-  input = "Print(Stern ''hello'')";
+  // input = "Print(Conc ''not '' (Conc ''help'' ''ing''))";
   // input = "let rec f n = n eq 1 -> 1 | n*f(n-1) in Print(f 4)";
   // input = "(fn x. Print(x)) 5 ";
   // input = "Print(hundred*2)";
   // input = "Print((2,3,''4''))";
+  // input = "Print(''help'' ne ''help'')";
+  // input = "Print(Null nil)";
+  // input = "Print((2,3,4) 4)";
+  // input = "let Greater x y = x ls y -> y | x in let Check(a, b, c) = Print(a @Greater b @Greater c) in Check(8, 23, 2) ";
 
   try
   { //! Lex
     scanner(input);
     screener();
+    // printTokens();
 
     //! Parser
     parser();

@@ -1,0 +1,3 @@
+let Even n = n/2*2 eq n -> 'Even' | 'Odd'
+in let OddEven (x) = print(Even x)
+in OddEven(4)

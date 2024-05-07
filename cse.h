@@ -42,7 +42,6 @@ void cse()
     string the_type = control_stk.top()->type;
     rules(the_type);
     // cout << i << endl;
-    // cout << "PE " << parsing_env.size() << endl;
     // cout << control_stk.top()->type << endl;
     // cout << stack_stk.top()->type << endl;
   }
@@ -197,25 +196,37 @@ void rules(string type)
   {
     string op = control_stk.top()->arg_str;
     control_stk.pop();
-    if (op == "ne" || op == "eq")
+    if (op == "eq")
     {
-      if (stack_stk.top()->type != "integer" && stack_stk.top()->type != "boolean")
-      {
-        cout << "Expect an integer or boolean with " << op << endl;
-        throw "Error";
-      };
-      int a = stack_stk.top()->arg_int;
+      Base *a = stack_stk.top();
       stack_stk.pop();
-      if (stack_stk.top()->type != "integer" && stack_stk.top()->type != "boolean")
-      {
-        cout << "Expect an integer or boolean with " << op << endl;
-        throw "Error";
-      };
-      int b = stack_stk.top()->arg_int;
+      Base *b = stack_stk.top();
       stack_stk.pop();
-      if (op == "eq")
+      if (a->type == "integer" && b->type == "integer")
       {
-        if (a == b)
+        if (a->arg_int == b->arg_int)
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+        else
+        {
+          stack_stk.push(new Base("boolean", "false"));
+        }
+      }
+      else if (a->type == "boolean" && b->type == "boolean")
+      {
+        if (a->arg_str == b->arg_str)
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+        else
+        {
+          stack_stk.push(new Base("boolean", "false"));
+        }
+      }
+      else if (a->type == "string" && b->type == "string")
+      {
+        if (a->arg_str == b->arg_str)
         {
           stack_stk.push(new Base("boolean", "true"));
         }
@@ -225,16 +236,54 @@ void rules(string type)
         }
       }
       else
-      //(op == "ne")
       {
-        if (a != b)
-        {
-          stack_stk.push(new Base("boolean", "true"));
-        }
-        else
+        cout << "Expect an integer or boolean or string pairs with " << op << endl;
+        throw "Error";
+      }
+    }
+    else if (op == "ne")
+    {
+      Base *a = stack_stk.top();
+      stack_stk.pop();
+      Base *b = stack_stk.top();
+      stack_stk.pop();
+      if (a->type == "integer" && b->type == "integer")
+      {
+        if (a->arg_int == b->arg_int)
         {
           stack_stk.push(new Base("boolean", "false"));
         }
+        else
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+      }
+      else if (a->type == "boolean" && b->type == "boolean")
+      {
+        if (a->arg_str == b->arg_str)
+        {
+          stack_stk.push(new Base("boolean", "false"));
+        }
+        else
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+      }
+      else if (a->type == "string" && b->type == "string")
+      {
+        if (a->arg_str == b->arg_str)
+        {
+          stack_stk.push(new Base("boolean", "false"));
+        }
+        else
+        {
+          stack_stk.push(new Base("boolean", "true"));
+        }
+      }
+      else
+      {
+        cout << "Expect an integer or boolean or string pairs with " << op << endl;
+        throw "Error";
       }
     }
     else if (op == "+" || op == "-" || op == "*" || op == "/" || op == "**" || op == "gr" || op == "ge" || op == "ls" || op == "le")
@@ -410,8 +459,7 @@ void rules(string type)
   }
   else if (type == "gamma")
   {
-    if (stack_stk.top()->type == "lambda") //! Look again if needed
-    //! Change this to accept strings and stuff.
+    if (stack_stk.top()->type == "lambda")
     {
       Base *func = stack_stk.top();
       control_stk.pop();
@@ -463,7 +511,13 @@ void rules(string type)
       stack_stk.pop();
       int index = stack_stk.top()->arg_int;
       stack_stk.pop();
-      stack_stk.push(list->children[index]);
+      if ((index > list->children.size()) || (index <= 0))
+      {
+        cout << "Index:" << to_string(index) << " is out of bound in ";
+        print_Base(list);
+        throw "Error";
+      }
+      stack_stk.push(list->children[index - 1]);
     }
     else if (stack_stk.top()->type == "ystar") // Think okay if not for pointers
     {

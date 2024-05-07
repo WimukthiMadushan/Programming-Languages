@@ -1,0 +1,3 @@
+let Greater x y = x ls y -> y | x
+in let Check (a,b,c) = Print(a @Greater b @Greater c)
+in Check (8,23,2)

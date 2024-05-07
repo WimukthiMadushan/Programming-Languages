@@ -1,0 +1,2 @@
+let check_pos (y) = Print((fn f. f (y)) (fn x. x ls 0 -> 'negative' | 'positive'))
+in check_pos (-3)

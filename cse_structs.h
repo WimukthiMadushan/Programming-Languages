@@ -55,9 +55,11 @@ vector<vector<Base *>> control_structures; // Stores each function present in th
 void add_in_built_to_env(Base *env)
 {
   // Defining internal variables
-  env->children.push_back(new Base("identifier", "hundred", new Base("integer", 100)));
+  //? env->children.push_back(new Base("identifier", "hundred", new Base("integer", 100)));
+
   // Defining inbuilt functions
   env->children.push_back(new Base("identifier", "Print", new Base("lambda", -1)));
+  env->children.push_back(new Base("identifier", "print", new Base("lambda", -1)));
   env->children.push_back(new Base("identifier", "Isinteger", new Base("lambda", -2)));
   env->children.push_back(new Base("identifier", "Isstring", new Base("lambda", -3)));
   env->children.push_back(new Base("identifier", "Istuple", new Base("lambda", -4)));
@@ -66,6 +68,8 @@ void add_in_built_to_env(Base *env)
   env->children.push_back(new Base("identifier", "Stem", new Base("lambda", -7)));
   env->children.push_back(new Base("identifier", "Stern", new Base("lambda", -8)));
   env->children.push_back(new Base("identifier", "Conc", new Base("lambda", -9)));
+  env->children.push_back(new Base("identifier", "Order", new Base("lambda", -10)));
+  env->children.push_back(new Base("identifier", "Null", new Base("lambda", -11)));
 }
 
 void print_Base(Base *env)
@@ -79,7 +83,7 @@ void print_Base(Base *env)
     }
     for (int i = 1; i < env->children.size(); i++)
     {
-      cout << ",";
+      cout << ", ";
       print_Base(env->children[i]);
     }
     cout << ")";
@@ -169,6 +173,11 @@ void in_built_functions(Base *func, Base *func_args)
       cout << "Expect a string with Stem" << endl;
       throw "Error";
     }
+    if (func_args->arg_str.size() == 0)
+    {
+      cout << "Expect a string atleast of size 1 with Stem" << endl;
+      throw "Error";
+    }
     stack_stk.push(new Base("string", func_args->arg_str.substr(0, 1)));
   }
   else if (val == -8)
@@ -178,9 +187,14 @@ void in_built_functions(Base *func, Base *func_args)
       cout << "Expect a string with Stern" << endl;
       throw "Error";
     }
+    if (func_args->arg_str.size() == 0)
+    {
+      cout << "Expect a string atleast of size 1 with Stern" << endl;
+      throw "Error";
+    }
     stack_stk.push(new Base("string", func_args->arg_str.substr(1)));
   }
-  else if (val == -9) //! Complete this and eq and neq for strings
+  else if (val == -9)
   {
     if (func_args->type != "string" || stack_stk.top()->type != "string")
     {
@@ -188,8 +202,34 @@ void in_built_functions(Base *func, Base *func_args)
       throw "Error";
     }
     Base *temp = stack_stk.top();
+    control_stk.pop();
     stack_stk.pop();
     string output = func_args->arg_str + temp->arg_str;
     stack_stk.push(new Base("string", output));
+  }
+  else if (val == -10)
+  {
+    if (func_args->type != "tuple")
+    {
+      cout << "Expect a tuple with Order" << endl;
+      throw "Error";
+    }
+    stack_stk.push(new Base("integer", func_args->children.size()));
+  }
+  else if (val == -11)
+  {
+    if (func_args->type != "tuple")
+    {
+      cout << "Expect a tuple with Null" << endl;
+      throw "Error";
+    }
+    if (func_args->children.size() == 0)
+    {
+      stack_stk.push(new Base("boolean", "true"));
+    }
+    else
+    {
+      stack_stk.push(new Base("boolean", "false"));
+    }
   }
 }
