@@ -3,15 +3,17 @@
 
 using namespace std;
 
-void standardize(Node *);
+void standardize(Node *);      // How each token is standardized according to its token type
+void standardize_tree(Node *); // Postorder traversal to standardize the tree
+
+// The following functions are used if we were to standardize the "and" token
+// But since they are not standardized in this code, they are not currently being called anywhere in the function
 void standardize_list(Node *);
-void standardize_tree(Node *);
 void standardize_tree_list(Node *);
 
-void standardizer()
+void standardizer() // This is the function that is being called by the main file
 {
   standardize_tree(ast_bu.top());
-  // standardize_tree_list(ast_bu.top());
 }
 
 void standardize_tree(Node *node)

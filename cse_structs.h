@@ -4,26 +4,26 @@
 
 using namespace std;
 
-// lambda: arg_str2 = arguments, arg_int = environment, arg_int2 = body
-// delta: arg_int = function_index
-// gamma: none
+//! Different types of "Base *" types
+// lambda: data_type functions (Read below)
+// eta: same structure as functions (Read below)
+// delta: arg_int = index on the array of control_structures array
+// gamma: -
 // operator: arg_str = operator
-// identifier: arg_str = arg_name
-// integer: arg_int = value
-// list: arg_int3 = values
-// environment: arg_int = environment_value
-// beta: none
+// identifier: arg_str = identifier name
+// environment: prev = parent environment
+// beta: -
 // tau: arg_int = size
-// eta: 2 int and one string
-// ystar: 0
-// bool: arg_str = "True" or "False"
+// ystar: -
+// boolean: arg_str = "true" or "false"
 
-// string:
-// tuple:
-// integer:
-// boolean:
-// function:
-// dummy: Eg. actual value of each print() output
+//! How different data types are stored
+// string: type = "string", arg_str = value
+// tuple: type = "tuple", children = values as Base *
+// integer: type = "integer", arg_int = value
+// boolean: type = "boolean", arg_str = "true" or "false"
+// function: type = "lambda", arg_str = name, arg_int = stored index, children = function parameters, prev = called environment
+// dummy: type = "dummy" Eg. actual value of each print() output
 
 class Base // Each node in the control stack and the stack stack
 {
@@ -43,6 +43,15 @@ public:
   Base(string type, string arg_str, int arg_int) : type(type), arg_str(arg_str), arg_int(arg_int){};
   Base(string type, string arg_str, Base *prev) : type(type), arg_str(arg_str), prev(prev){};
   Base(string type, Base *prev) : type(type), prev(prev){};
+
+  // Destructor
+  ~Base()
+  {
+    for (auto &child : children)
+    {
+      delete child;
+    }
+  }
 };
 
 stack<Base *> control_stk; // Working control stack
@@ -73,7 +82,7 @@ void add_in_built_to_env(Base *env)
   env->children.push_back(new Base("identifier", "ItoS", new Base("lambda", -12)));
 }
 
-void print_Base(Base *env)
+void print_Base(Base *env) // Printing a Base structure
 {
   if (env->type == "tuple")
   {
@@ -118,6 +127,18 @@ void print_Base(Base *env)
           {
             cout << "\b";
           }
+          else if (env->arg_str[i] == '\\')
+          {
+            cout << "\\";
+          }
+          else if (env->arg_str[i] == '"')
+          {
+            cout << "\"";
+          }
+          else if (env->arg_str[i] == '\'')
+          {
+            cout << "\'";
+          }
           else
           {
             string sub = env->arg_str.substr(i - 1, 2);
@@ -137,6 +158,7 @@ void print_Base(Base *env)
   }
 }
 
+// Runs the suitable index based on the index of the inbuilt function
 void in_built_functions(Base *func, Base *func_args)
 {
   int val = func->arg_int;

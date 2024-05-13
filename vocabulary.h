@@ -1,6 +1,8 @@
 #include <iostream>
 using namespace std;
 
+// This file contains all the necessary function required to identify each character and their category.
+
 bool isLetter(char newElement)
 {
   int size = 52;
@@ -85,7 +87,7 @@ bool isReserved(string token)
   return false;
 }
 
-bool isBOp(string token)
+bool isBOp(string token) // Binary operators
 {
   int size = 14;
   string op[size] = {"aug", "or", "&", "+", "-", "/", "**", "*", "gr", "ge", "le", "ls", "eq", "ne"};
@@ -99,7 +101,7 @@ bool isBOp(string token)
   return false;
 }
 
-bool isUOp(string token)
+bool isUOp(string token) // Unary operators
 {
   int size = 2;
   string op[size] = {"not", "neg"};

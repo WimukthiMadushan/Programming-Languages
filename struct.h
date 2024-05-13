@@ -3,7 +3,7 @@
 
 using namespace std;
 
-typedef struct Token
+typedef struct Token // Scanned tokens
 {
   string type;
   string value;
@@ -24,6 +24,8 @@ extern vector<string> dt_bu; // Derivation Tree Bottom Up
 
 extern stack<Node *> ast_bu; // Abstract Syntax Tree Bottom Up
 
+// Add the given amount of children (arguments) from the top of the stack
+// Then push this newly created token into that stack
 void Build_tree(string token, int arguments)
 {
   Node *new_node = new Node(token);
@@ -43,7 +45,7 @@ void Build_tree(string token, int arguments)
   ast_bu.push(new_node);
 }
 
-void AST(Node *root, int depth)
+void AST(Node *root, int depth) // AST recursion funciton
 {
   for (int i = 0; i < depth; i++)
   {
@@ -57,14 +59,12 @@ void AST(Node *root, int depth)
   }
 }
 
-void printAST()
+void printAST() // Prints the AST
 {
-  cout << endl;
   AST(ast_bu.top(), 0);
-  cout << endl;
 }
 
-void printTokens()
+void printTokens() // Token list for derivation purposes.
 {
   cout << endl
        << "Tokens" << endl;
@@ -83,7 +83,7 @@ void printTokens()
   cout << endl;
 }
 
-void printTree()
+void printTree() // Defivation tree for debugging purposes
 {
   cout << endl
        << "Derivation Tree Top Down" << endl;

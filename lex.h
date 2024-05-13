@@ -14,6 +14,7 @@ string addSpace(string buffer, char space_char)
   return buffer;
 }
 
+// screener removes unnecessary spaces, tabs, newlines and comments from the code
 void screener()
 {
   vector<Token> new_tokens;
@@ -32,6 +33,7 @@ void screener()
   tokens = new_tokens;
 }
 
+// Scans the input file and creates tokens
 void scanner(string input)
 {
 

@@ -5,6 +5,9 @@
 #include <vector>
 using namespace std;
 
+// This file contains all the grammer rules required to build the Abstract Syntax Tree
+// Function names tally with the non terminals given in the RPAL_grammer.pdf
+
 void E();
 void Ew();
 void T();
@@ -27,6 +30,8 @@ void Db();
 void Vb();
 void Vl();
 
+// Initial grammer call
+// At the end throws an error if there are any remaining tokens in the array.
 void parser()
 {
   try
@@ -48,6 +53,9 @@ void parser()
   }
 }
 
+// Reads the next value in the array and moves the current pointer forward by one index.
+// Does suitable formattings for strins, identifiers and integers.
+// In any invalid case, this throws an error.
 void Read(string type, string value)
 {
   if (tokens.empty())
@@ -93,6 +101,9 @@ void Read(string type, string value)
   }
 }
 
+// Checks if the next value in the array is of the given type and value.
+// If no value is given, it will check only the type of the next token.
+// In any invalid case, this throws an error.
 bool NextToken(string type, string value)
 {
   if (tokens.empty())

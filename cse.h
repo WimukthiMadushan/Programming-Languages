@@ -5,7 +5,7 @@
 
 #include "cse_structs.h"
 
-int env_count = 0;
+int env_count = 0; // Keeps track of the number of functions created.
 
 // Creating the control stack
 void pre_order_traversal(Node *root, int environment); // Traverse  through the tree.
@@ -27,7 +27,7 @@ void cse()
   control_structures.push_back(vector<Base *>());
   pre_order_traversal(ast_bu.top(), 0);
 
-  // Initialising a parsing environment
+  // Initialising a global parsing environment
   parsing_env.push(new Base("environment"));
   parsing_env.top()->prev = nullptr;
   // Adding in built identifiers
@@ -148,7 +148,6 @@ void pre_order_traversal(Node *root, int environment)
     {
       control_structures[environment].push_back(new Base("gamma"));
     }
-    //! Check the suitable tokens
     else if (root->token == "dummy")
     {
       control_structures[environment].push_back(new Base("dummy"));
