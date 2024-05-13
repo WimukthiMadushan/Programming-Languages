@@ -50,7 +50,8 @@ public:
     for (auto &child : children)
     {
       delete child;
-    }
+    };
+    delete prev;
   }
 };
 
@@ -297,5 +298,27 @@ void in_built_functions(Base *func, Base *func_args)
       throw "Error";
     }
     stack_stk.push(new Base("string", to_string(func_args->arg_int)));
+  }
+}
+
+void clear_stacks()
+{
+  while (!ast_bu.empty())
+  {
+    Node *temp = ast_bu.top();
+    ast_bu.pop();
+    delete temp;
+  }
+  while (!tokens.empty())
+  {
+    Token temp = tokens.back();
+    tokens.pop_back();
+    delete &temp;
+  }
+  while (!dt_bu.empty())
+  {
+    string temp = dt_bu.back();
+    dt_bu.pop_back();
+    delete &temp;
   }
 }

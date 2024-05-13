@@ -17,6 +17,14 @@ typedef struct Node // Building block of abstract syntax tree
   vector<Node *> children;
 
   Node(string token) : token(token), children() {}
+
+  ~Node()
+  {
+    for (Node *child : children)
+    {
+      delete child;
+    }
+  }
 } Node;
 
 extern vector<Token> tokens; // Token list

@@ -81,6 +81,6 @@ int main(int argc, char *argv[])
   }
   catch (...)
   {
-    return 0;
   }
+  clear_stacks();
 }
