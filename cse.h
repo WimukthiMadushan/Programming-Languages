@@ -34,30 +34,18 @@ void cse()
   add_in_built_to_env(parsing_env.top());
   add_func_to_control(parsing_env.top(), 0);
 
-  // Evaluating the control stack
   // Iterating through the control stack and evaluating
   while (control_stk.size() > 1)
-  // for (int i = 0; i < 7; i++)
   {
     string the_type = control_stk.top()->type;
     rules(the_type);
-    // cout << i << endl;
-    // cout << control_stk.top()->type << endl;
-    // cout << stack_stk.top()->type << endl;
   }
-  //! these are completly working
   Base *temp = stack_stk.top();
   stack_stk.pop();
   if (stack_stk.top() != control_stk.top())
   {
     cout << "Run time Error";
     throw "Run time Error";
-  }
-  else
-  {
-    // cout << temp->type << endl;
-    // cout << temp->arg_int << endl;
-    // cout << temp->arg_str << endl;
   }
 }
 
@@ -104,19 +92,19 @@ void pre_order_traversal(Node *root, int environment)
   }
   else
   {
-    if (root->token[0] == '<') // Complete
+    if (root->token[0] == '<')
     {
       if (root->token[1] == 'I')
       {
         if (root->token[2] == 'N')
         {
-          // this is a number
+          // This is a number
           int num = stoi(root->token.substr(5, root->token.length() - 6));
           control_structures[environment].push_back(new Base("integer", num));
         }
         else
         {
-          // this is an id
+          // This is an identifier
           string sliced = root->token.substr(4, root->token.length() - 5);
           control_structures[environment].push_back(new Base("identifier", sliced));
         }
@@ -128,11 +116,11 @@ void pre_order_traversal(Node *root, int environment)
         control_structures[environment].push_back(new Base("string", sliced));
       }
     }
-    else if (isBOp(root->token) || isUOp(root->token)) // Complete
+    else if (isBOp(root->token) || isUOp(root->token))
     {
       control_structures[environment].push_back(new Base("operator", root->token));
     }
-    else if (root->token == "true" || root->token == "false") // Complete
+    else if (root->token == "true" || root->token == "false")
     {
       control_structures[environment].push_back(new Base("boolean", root->token));
     }
@@ -181,17 +169,17 @@ void add_func_to_control(Base *prev, int number) // This adds a saved function t
 
 void rules(string type)
 {
-  if (type == "integer") // Complete
+  if (type == "integer")
   {
     stack_stk.push(control_stk.top());
     control_stk.pop();
   }
-  else if (type == "boolean") // Complete
+  else if (type == "boolean")
   {
     stack_stk.push(control_stk.top());
     control_stk.pop();
   }
-  else if (type == "operator") // Complete
+  else if (type == "operator")
   {
     string op = control_stk.top()->arg_str;
     control_stk.pop();
@@ -436,7 +424,7 @@ void rules(string type)
         }
       }
     }
-    else if (op == "aug") // Complete for other operations if there are any including aug
+    else if (op == "aug")
     {
       if (stack_stk.top()->type != "tuple")
       {
@@ -450,7 +438,7 @@ void rules(string type)
       stack_stk.push(list);
     }
   }
-  else if (type == "lambda") // Complete
+  else if (type == "lambda")
   {
     stack_stk.push(control_stk.top());
     control_stk.pop();
@@ -471,9 +459,7 @@ void rules(string type)
       {
         add_func_to_control(func->prev, func->arg_int);
 
-        // cout << "children size : " << func->children.size() << endl;
-
-        if (func->children.size() > 1) // Argument dissassembles the list
+        if (func->children.size() > 1)
         {
           if (func_args->children.size() != func->children.size())
           {
@@ -490,11 +476,8 @@ void rules(string type)
             }
           }
         }
-        // else there is only one argument
         else
         {
-          // cout << "type : " << func_args->type << endl;
-          // cout << "value : " << func_args->arg_int << endl;
           parsing_env.top()->children.push_back(new Base("identifier", func->children[0]->arg_str, func_args));
         }
       }
@@ -518,7 +501,7 @@ void rules(string type)
       }
       stack_stk.push(list->children[index - 1]);
     }
-    else if (stack_stk.top()->type == "ystar") // Think okay if not for pointers
+    else if (stack_stk.top()->type == "ystar")
     {
       control_stk.pop();
       stack_stk.pop();
@@ -529,18 +512,16 @@ void rules(string type)
       eta->prev = lambda->prev;
       eta->children = lambda->children;
       eta->arg_int = lambda->arg_int;
-      // eta->arg_str = lambda->arg_str;
 
       stack_stk.push(eta);
     }
-    else if (stack_stk.top()->type == "eta") // This okay if not for pointers
+    else if (stack_stk.top()->type == "eta")
     {
       control_stk.push(new Base("gamma"));
       Base *lambda = new Base("lambda");
       lambda->prev = stack_stk.top()->prev;
       lambda->children = stack_stk.top()->children;
       lambda->arg_int = stack_stk.top()->arg_int;
-      // lambda->arg_str = stack_stk.top()->arg_str;
       stack_stk.push(lambda);
     }
   }
@@ -628,7 +609,7 @@ void rules(string type)
     stack_stk.push(control_stk.top());
     control_stk.pop();
   }
-  else if (type == "beta") // Complete
+  else if (type == "beta")
   {
     if (stack_stk.top()->arg_str == "true")
     {
