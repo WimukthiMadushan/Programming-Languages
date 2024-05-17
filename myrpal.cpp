@@ -36,6 +36,11 @@ string readFileToString(const string &filename)
 
 int main(int argc, char *argv[])
 {
+  // CS 3513 Programming Languages Project
+  // Members
+  // Manawathilake K.C.K. = 210372D
+  // Bandara W.G.W.M. = 210067X
+
   string input;
   string input_file;
   bool tree_flag = false;
