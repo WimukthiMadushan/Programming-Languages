@@ -309,12 +309,12 @@ void clear_stacks()
     ast_bu.pop();
     delete temp;
   }
-  while (!tokens.empty())
-  {
-    Token temp = tokens.back();
-    tokens.pop_back();
-    delete &temp;
-  }
+  // while (!tokens.empty())
+  // {
+  //   Token temp = tokens.back();
+  //   tokens.pop_back();
+  //   delete &temp;
+  // }
   while (!dt_bu.empty())
   {
     string temp = dt_bu.back();
