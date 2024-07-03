@@ -1,5 +1,17 @@
-This is a compiler built for RPAL language.
+# RPAL Compiler Project
 
-use ./mypal file_name to compile and run a program
+This project is a compiler built in C++ for the RPAL language.
 
-use ./mypal file_name -ast to print the Abstract syntax tree
+## Usage
+
+To compile and run an RPAL program, use the following command:
+
+```bash
+./mypal file_name
+```
+
+To print the Abstract syntax tree of the program, use the following command:
+
+```bash
+./mypal file_name -ast
+```
